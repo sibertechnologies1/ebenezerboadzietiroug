@@ -27,7 +27,7 @@ function Contact() {
 
               <div>
                 <h4 className="text-sm font-semibold text-[#161f4a]">Location</h4>
-                <p className="text-[#161f4a]/80">Accra, Ghana</p>
+                <p className="text-[#161f4a]/80">Kumasi, Ghana</p>
               </div>
             </div>
           </section>
