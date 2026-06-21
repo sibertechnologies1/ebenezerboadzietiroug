@@ -7,69 +7,85 @@ function AboutMe() {
   const [ref, visible] = useInViewAnimate({ threshold: 0.2 })
 
   return (
-    <section ref={ref} className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 items-stretch gap-6" aria-labelledby="aboutme-heading">
+    <section 
+      ref={ref} 
+      className="max-w-6xl mx-0 grid grid-cols-1 md:grid-cols-2 items-stretch gap-0 rounded-2xl overflow-hidden shadow-2xl bg-[#161f4a]" 
+      aria-labelledby="aboutme-heading"
+    >
       {/* Image column */}
-      <figure className={`w-full h-64 sm:h-80 md:h-auto md:min-h-full overflow-hidden ${visible ? 'animate-fade-right' : 'opacity-0'}`}>
+      <figure className={`w-full min-h-[320px] md:h-auto overflow-hidden transition-all duration-1000 transform ${visible ? 'animate-fade-right opacity-100' : 'opacity-0'}`}>
         <img
           src={AboutMeImg}
           alt="Ebenezer — UI/UX developer and digital marketer"
+          // Swapped custom focal points to object-center so it fills the left pane perfectly
           className="w-full h-full object-cover object-center"
         />
       </figure>
 
       {/* Content panel */}
-      <div className={`flex flex-col justify-center gap-6 bg-[#161f4a] px-6 sm:px-12 py-10 text-white ${visible ? 'animate-fade-left' : 'opacity-0'}`}>
-        <h3 id="aboutme-heading" className="font-extrabold text-2xl sm:text-3xl">Hi, I'm Ebenezer</h3>
+      <div className={`flex flex-col justify-center gap-6 px-6 sm:px-12 py-12 text-white transition-all duration-1000 transform ${visible ? 'animate-fade-left opacity-100' : 'opacity-0'}`}>
+        <div>
+          <span className="text-orange-400 font-bold tracking-wider uppercase text-sm block mb-1">About Me</span>
+          <h3 id="aboutme-heading" className="font-extrabold text-3xl sm:text-4xl">Hi, I'm Ebenezer</h3>
+        </div>
 
-        <p className="text-white/90 leading-relaxed">
+        <p className="text-white/85 leading-relaxed text-base sm:text-lg">
           A multidisciplinary digital professional with years of experience driving tangible
           business growth. By blending data-driven UI/UX design with SEO and social marketing
           strategies, I create intuitive, high-converting digital products.
         </p>
 
-        <p className="text-white/90 leading-relaxed">
+        <p className="text-white/85 leading-relaxed text-base sm:text-lg">
           I craft memorable digital experiences that perform under pressure and clearly communicate
           my clients' unique value to their ideal audience — turning complex challenges into
           measurable growth.
         </p>
 
-        <div className="mt-2 grid grid-cols-2 gap-x-8 gap-y-4">
+        {/* Contact Info Grid */}
+        <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-5 border-t border-white/10 pt-6">
           <div>
-            <h4 className="text-orange-400 font-semibold text-lg">Name</h4>
-            <p className="text-white">Tiroug Boadzie Ebenezer</p>
+            <h4 className="text-orange-400 font-semibold text-sm uppercase tracking-wider mb-0.5">Name</h4>
+            <p className="text-white font-medium">Tiroug Boadzie Ebenezer</p>
           </div>
 
           <div>
-            <h4 className="text-orange-400 font-semibold text-lg">Phone</h4>
-            <p className="text-white">
-              <a href="tel:+233502156703" className="underline hover:text-blue-200">+233 50 215 6703</a>
+            <h4 className="text-orange-400 font-semibold text-sm uppercase tracking-wider mb-0.5">Phone</h4>
+            <p className="text-white font-medium">
+              <a href="tel:+233502156703" className="hover:text-orange-300 transition-colors">+233 50 215 6703</a>
             </p>
           </div>
 
           <div>
-            <h4 className="text-orange-400 font-semibold text-lg">Email</h4>
-            <p className="text-white break-all">
-              <a href="mailto:eboadzietiroug@gmail.com" className="underline hover:text-blue-200">eboadzietiroug@gmail.com</a>
+            <h4 className="text-orange-400 font-semibold text-sm uppercase tracking-wider mb-0.5">Email</h4>
+            <p className="text-white font-medium break-all">
+              <a href="mailto:eboadzietiroug@gmail.com" className="hover:text-orange-300 transition-colors">eboadzietiroug@gmail.com</a>
             </p>
           </div>
 
           <div>
-            <h4 className="text-orange-400 font-semibold text-lg">LinkedIn</h4>
-            <p className="text-white break-all">
+            <h4 className="text-orange-400 font-semibold text-sm uppercase tracking-wider mb-0.5">LinkedIn</h4>
+            <p className="text-white font-medium text-sm break-all">
               <a
                 href="https://www.linkedin.com/in/ebenezerboadzietiroug"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="underline hover:text-blue-200 break-words"
+                className="hover:text-orange-300 transition-colors line-clamp-1"
               >
-                linkedin.com/in/ebenezerboadzietiroug
+                in/ebenezerboadzietiroug
               </a>
             </p>
           </div>
         </div>
 
-        <div className="mt-6">
-          <Link to="/contact" className="inline-block bg-white text-[#161f4a] font-bold py-2 px-6 rounded-full hover:bg-blue-50 transition">Let's talk</Link>
+        {/* Call to Action with matching Hover Swipe effect */}
+        <div className="mt-4">
+          <Link 
+            to="/contact" 
+            className="group relative inline-block overflow-hidden bg-transparent text-white font-bold py-3 px-8 rounded-full border border-white transition-colors duration-300 hover:text-[#161f4a]"
+          >
+            <span className="absolute inset-0 w-full h-full bg-white transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out -z-10" />
+            <span className="relative z-10">Let's talk</span>
+          </Link>
         </div>
       </div>
     </section>
