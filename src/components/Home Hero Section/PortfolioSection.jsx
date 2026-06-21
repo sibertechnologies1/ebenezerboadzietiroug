@@ -1,6 +1,7 @@
 import React from 'react'
 import PL1 from "./PL1.png"
 import PL2 from "./PL2.png"
+import useInViewAnimate from '../../hooks/useInViewAnimate'
 
 const projects = [
   { image: PL1, title: 'Mansur Enterprises', label: 'E-COMMERCE WEBSITE', href: '#' },
@@ -8,8 +9,10 @@ const projects = [
 ]
 
 const PortfolioSection = () => {
+  const [ref, visible] = useInViewAnimate({ threshold: 0.25 })
+
   return (
-    <div id='portfolio' className='scroll-mt-24 bg-[#161f4a] text-white py-20 px-4 sm:px-6 lg:px-8'>
+    <div id='portfolio' ref={ref} className={`scroll-mt-24 bg-[#161f4a] text-white py-20 px-4 sm:px-6 lg:px-8 ${visible ? 'animate-fade-up' : 'opacity-0'}`}>
       <p className='text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-blue-300 text-center mb-3'>
         My Portfolio
       </p>

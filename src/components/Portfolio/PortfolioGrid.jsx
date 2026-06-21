@@ -1,6 +1,7 @@
 import React from 'react'
 import PL1 from '../Home Hero Section/PL1.png'
 import PL2 from '../Home Hero Section/PL2.png'
+import useInViewAnimate from '../../hooks/useInViewAnimate'
 
 const projects = [
   {
@@ -20,16 +21,18 @@ const projects = [
 ]
 
 function PortfolioGrid() {
+  const [ref, visible] = useInViewAnimate({ threshold: 0.2 })
+
   return (
-    <section className='py-20 px-4 sm:px-6 lg:px-8 bg-white'>
+    <section ref={ref} className='py-20 px-4 sm:px-6 lg:px-8 bg-white'>
       <div className='max-w-6xl mx-auto'>
-        <div className='mb-12 text-center'>
+        <div className={`mb-12 text-center ${visible ? 'animate-fade-up' : 'opacity-0'}`}>
           <p className='text-xs sm:text-sm uppercase tracking-[0.3em] text-blue-500 font-semibold'>Recent projects</p>
           <h2 className='text-3xl sm:text-4xl font-extrabold text-[#161f4a] mt-4'>Work that moves brands forward</h2>
           <p className='max-w-2xl mx-auto mt-4 text-[#161f4a]/75 leading-relaxed'>Explore a selection of my recent design and digital marketing work, built to make online experiences feel clean, engaging, and memorable.</p>
         </div>
 
-        <div className='grid gap-8 lg:grid-cols-2'>
+        <div className={`grid gap-8 lg:grid-cols-2 ${visible ? 'animate-fade-up delay-100' : 'opacity-0'}`}>
           {projects.map(({ image, title, description, label, href }) => (
             <a
               key={title}

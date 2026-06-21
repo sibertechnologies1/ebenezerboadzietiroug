@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import HheroImg from './HheroImg.png';
 import { FaFacebook, FaInstagram, FaLinkedin, FaTiktok } from "react-icons/fa6"
+import useInViewAnimate from '../../hooks/useInViewAnimate'
 
 function HomeHero() {
+  const [heroRef, heroVisible] = useInViewAnimate({ threshold: 0.2 })
   // 1. Animation States
   const fullText = "Hi, I am Ebenezer";
   const [currentText, setCurrentText] = useState("");
@@ -32,10 +34,10 @@ function HomeHero() {
   }
 
   return (
-    <div id='home' className='scroll-mt-24 flex lg:flex-row flex-col items-center justify-between py-10 lg:py-20 px-4 sm:px-6 lg:px-8 gap-10 bg-[#161f4a]'>
+    <div id='home' ref={heroRef} className='scroll-mt-24 flex lg:flex-row flex-col items-center justify-between py-10 lg:py-20 px-4 sm:px-6 lg:px-8 gap-10 bg-[#161f4a]'>
 
       {/* Text Block */}
-      <div className='flex flex-col gap-4 flex-1 text-center lg:text-left'>
+      <div className={`flex flex-col gap-4 flex-1 text-center lg:text-left ${heroVisible ? 'animate-fade-up' : 'opacity-0'}`}>
         <h1
           className='text-3xl sm:text-4xl lg:text-5xl font-bold text-white min-h-[40px] sm:min-h-[50px]'
           aria-label={fullText}

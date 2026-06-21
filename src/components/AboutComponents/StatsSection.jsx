@@ -1,5 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { FaHandshake, FaClipboardList, FaCalendarDays } from 'react-icons/fa6'
+import useInViewAnimate from '../../hooks/useInViewAnimate'
 
 const stats = [
   { icon: FaHandshake, value: 20, suffix: '', label: 'Clients', circle: false },
@@ -38,26 +39,15 @@ function StatCard({ icon: Icon, value, suffix, label, circle, animate }) {
 
 function StatsSection() {
   const [animate, setAnimate] = useState(false)
-  const sectionRef = useRef(null)
+  const [ref, visible] = useInViewAnimate({ threshold: 0.3 })
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setAnimate(true)
-          observer.disconnect()
-        }
-      },
-      { threshold: 0.3 }
-    )
-
-    if (sectionRef.current) observer.observe(sectionRef.current)
-    return () => observer.disconnect()
-  }, [])
+    if (visible) setAnimate(true)
+  }, [visible])
 
   return (
-    <div ref={sectionRef} className='bg-[#161f4a] py-16 px-4 sm:px-6 lg:px-8'>
-      <div className='grid grid-cols-1 sm:grid-cols-3 gap-10 max-w-5xl mx-auto'>
+    <div ref={ref} className='bg-[#161f4a] py-16 px-4 sm:px-6 lg:px-8'>
+      <div className={`grid grid-cols-1 sm:grid-cols-3 gap-10 max-w-5xl mx-auto ${visible ? 'animate-fade-up' : 'opacity-0'}`}>
         {stats.map((stat) => (
           <StatCard key={stat.label} {...stat} animate={animate} />
         ))}

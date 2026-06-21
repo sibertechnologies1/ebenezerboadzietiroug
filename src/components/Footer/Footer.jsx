@@ -25,7 +25,7 @@ function Footer() {
   }
 
   return (
-    <footer className='bg-white text-[#161f4a] border-t border-[#161f4a]/10 px-4 sm:px-6 lg:px-8 pt-16 pb-8'>
+    <footer className='bg-white text-[#161f4a] border-t border-[#161f4a]/10 px-4 sm:px-6 lg:px-8 pt-16 pb-8 animate-fade-up'>
       <div className='grid grid-cols-1 md:grid-cols-3 gap-10 max-w-5xl mx-auto'>
         {/* Brand */}
         <div className='flex flex-col items-center md:items-start text-center md:text-left'>

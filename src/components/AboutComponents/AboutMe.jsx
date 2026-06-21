@@ -1,12 +1,15 @@
 import React from 'react'
 import AboutMeImg from './AboutMeImg.jpeg'
 import { Link } from 'react-router-dom'
+import useInViewAnimate from '../../hooks/useInViewAnimate'
 
 function AboutMe() {
+  const [ref, visible] = useInViewAnimate({ threshold: 0.2 })
+
   return (
-    <section className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 items-stretch gap-6" aria-labelledby="aboutme-heading">
+    <section ref={ref} className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 items-stretch gap-6" aria-labelledby="aboutme-heading">
       {/* Image column */}
-      <figure className="w-full h-64 sm:h-80 md:h-auto md:min-h-full overflow-hidden">
+      <figure className={`w-full h-64 sm:h-80 md:h-auto md:min-h-full overflow-hidden ${visible ? 'animate-fade-right' : 'opacity-0'}`}>
         <img
           src={AboutMeImg}
           alt="Ebenezer — UI/UX developer and digital marketer"
@@ -15,7 +18,7 @@ function AboutMe() {
       </figure>
 
       {/* Content panel */}
-      <div className="flex flex-col justify-center gap-6 bg-[#161f4a] px-6 sm:px-12 py-10 text-white">
+      <div className={`flex flex-col justify-center gap-6 bg-[#161f4a] px-6 sm:px-12 py-10 text-white ${visible ? 'animate-fade-left' : 'opacity-0'}`}>
         <h3 id="aboutme-heading" className="font-extrabold text-2xl sm:text-3xl">Hi, I'm Ebenezer</h3>
 
         <p className="text-white/90 leading-relaxed">

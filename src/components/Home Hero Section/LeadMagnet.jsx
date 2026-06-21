@@ -1,9 +1,11 @@
 import React, { useState } from 'react'
 import ui from "./ui.png"
+import useInViewAnimate from '../../hooks/useInViewAnimate'
 
 const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xaqzrkpp'
 
 function LeadMagnet() {
+  const [ref, visible] = useInViewAnimate({ threshold: 0.25 })
   const [formData, setFormData] = useState({ fullname: '', email: '' })
   const [status, setStatus] = useState('idle') // idle | sending | success | error
 
@@ -33,7 +35,7 @@ function LeadMagnet() {
   }
 
   return (
-    <div id='contact' className='scroll-mt-24 bg-white text-[#161f4a] py-20 px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center'>
+    <div id='contact' ref={ref} className={`scroll-mt-24 bg-white text-[#161f4a] py-20 px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center ${visible ? 'animate-fade-up' : 'opacity-0'}`}>
       <div className='bg-[#161f4a] rounded-2xl p-6 sm:p-10 lg:p-16'>
         <img src={ui} alt="UI/UX Design" loading='lazy' className='w-full h-auto rounded-lg shadow-lg' />
       </div>

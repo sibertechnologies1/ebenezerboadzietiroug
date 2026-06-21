@@ -15,7 +15,7 @@ function Navbar() {
   const closeMenu = () => setIsOpen(false)
 
   return (
-    <div className='bg-[#161f4a] sm:bg-white px-4 sm:px-6 lg:px-8 sticky top-0 z-50 shadow-md'>
+    <div className='bg-[#161f4a] sm:bg-white px-4 sm:px-6 lg:px-8 sticky top-0 z-50 shadow-md animate-zoom-in'>
       <div className='flex justify-between items-center py-4'>
         <img src={logo} alt="Logo" className='w-20 h-20 object-contain bg-white sm:bg-transparent rounded-full' />
 

@@ -1,9 +1,11 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import useInViewAnimate from '../../hooks/useInViewAnimate'
 
 function PortfolioHero() {
+  const [ref, visible] = useInViewAnimate({ threshold: 0.2 })
   return (
-    <section className='bg-[#161f4a] text-white py-20 px-4 sm:px-6 lg:px-8'>
+    <section ref={ref} className={`bg-[#161f4a] text-white py-20 px-4 sm:px-6 lg:px-8 ${visible ? 'animate-fade-up' : 'opacity-0'}`}>
       <div className='max-w-6xl mx-auto flex flex-col items-center text-center gap-6'>
         <p className='uppercase tracking-[0.3em] text-blue-300 font-semibold text-sm sm:text-base'>Portfolio</p>
         <h1 className='text-4xl sm:text-5xl lg:text-6xl font-extrabold'>Featured digital work</h1>

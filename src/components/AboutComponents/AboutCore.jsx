@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
+import useInViewAnimate from '../../hooks/useInViewAnimate'
 
 const skills = [
   { name: 'UI/UX Designer', percent: 92 },
@@ -10,6 +11,7 @@ const skills = [
 function AboutCore() {
   const [animate, setAnimate] = useState(false)
   const skillsRef = useRef(null)
+  const [ref, visible] = useInViewAnimate({ threshold: 0.2 })
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -27,8 +29,8 @@ function AboutCore() {
   }, [])
 
   return (
-    <section aria-labelledby='aboutcore-heading' className='grid lg:grid-cols-2 grid-cols-1 justify-center items-center bg-white py-8 px-4 md:px-12 gap-6'>
-      <div className='flex flex-col flex-1'>
+    <section ref={ref} aria-labelledby='aboutcore-heading' className='grid lg:grid-cols-2 grid-cols-1 justify-center items-center bg-white py-8 px-4 md:px-12 gap-6'>
+      <div className={`flex flex-col flex-1 ${visible ? 'animate-fade-left' : 'opacity-0'}`}>
         <p className='text-sm uppercase tracking-[0.25em] text-blue-500 font-semibold mb-2'>MY CORE EXPERTISE</p>
         <h1 id='aboutcore-heading' className='text-[#161f4a] font-extrabold text-3xl sm:text-4xl md:text-5xl leading-tight'>Let's work
           <br /> together</h1>
@@ -46,7 +48,7 @@ function AboutCore() {
         </Link>
       </div>
 
-      <div ref={skillsRef} className='flex flex-col justify-center gap-8 w-full' aria-hidden={false}>
+      <div ref={skillsRef} className={`flex flex-col justify-center gap-8 w-full ${animate ? 'animate-fade-up' : 'opacity-0'}`} aria-hidden={false}>
         {skills.map((skill) => (
           <div key={skill.name}>
             <h3 className='text-[#161f4a] font-bold text-lg mb-2'>{skill.name}</h3>

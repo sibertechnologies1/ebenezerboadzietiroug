@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import useInViewAnimate from '../../hooks/useInViewAnimate'
 
 function ContactForm() {
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' })
@@ -27,8 +28,10 @@ function ContactForm() {
     setStatus({ type: 'success', message: 'Opening your email client...' })
   }
 
+  const [ref, visible] = useInViewAnimate({ threshold: 0.2 })
+
   return (
-    <form onSubmit={handleSubmit} className="w-full max-w-2xl mx-auto bg-white p-6 rounded-2xl shadow-md">
+    <form ref={ref} onSubmit={handleSubmit} className={`w-full max-w-2xl mx-auto bg-white p-6 rounded-2xl shadow-md ${visible ? 'animate-fade-up' : 'opacity-0'}`}>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <label className="flex flex-col">
           <span className="text-sm font-semibold text-[#161f4a]">Name</span>

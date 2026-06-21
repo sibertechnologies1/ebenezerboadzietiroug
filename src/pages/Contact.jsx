@@ -2,13 +2,16 @@ import React from 'react'
 import Navbar from '../components/Navbar/Navbar'
 import Footer from '../components/Footer/Footer'
 import ContactForm from '../components/Contact/ContactForm'
+import useInViewAnimate from '../hooks/useInViewAnimate'
 
 function Contact() {
+  const [ref, visible] = useInViewAnimate({ threshold: 0.15 })
+
   return (
     <div>
       <Navbar />
       <main className="bg-white py-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+        <div ref={ref} className={`max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-start ${visible ? 'animate-fade-up' : 'opacity-0'}`}>
           <section>
             <p className="text-sm uppercase tracking-[0.2em] text-blue-500 font-semibold">Get in touch</p>
             <h1 className="mt-3 text-3xl sm:text-4xl font-extrabold text-[#161f4a]">Let's build something together</h1>

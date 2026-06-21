@@ -1,4 +1,5 @@
 import React from 'react'
+import useInViewAnimate from '../../hooks/useInViewAnimate'
 import { BiLaptop, BiSearch, BiCode } from "react-icons/bi";
 
 const services = [
@@ -36,9 +37,11 @@ const services = [
 ]
 
 function SkillSection() {
+  const [sectionRef, sectionVisible] = useInViewAnimate({ threshold: 0.2 })
+
   return (
-    <div id='about' className='scroll-mt-24 bg-white px-4 sm:px-6 lg:px-8 flex flex-col gap-8 py-12'>
-      <div className='items-center flex flex-col'>
+    <div ref={sectionRef} id='about' className='scroll-mt-24 bg-white px-4 sm:px-6 lg:px-8 flex flex-col gap-8 py-12'>
+      <div className={`items-center flex flex-col ${sectionVisible ? 'animate-fade-up' : 'opacity-0'}`}>
         <p className='text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-blue-500'>What I Do</p>
         <h2 className='text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#161f4a] text-center mt-3'>
           Services Build To Grow Your Brand
@@ -48,7 +51,7 @@ function SkillSection() {
         </p>
       </div>
 
-      <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
+      <div className={`grid grid-cols-1 lg:grid-cols-3 gap-6 ${sectionVisible ? 'animate-fade-up delay-100' : 'opacity-0'}`}>
         {services.map(({ icon: Icon, title, items }) => (
           <div
             key={title}
