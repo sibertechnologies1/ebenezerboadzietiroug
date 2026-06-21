@@ -36,7 +36,7 @@ function PortfolioGrid() {
           {projects.map(({ image, title, description, label, href }) => (
             <a
               key={title}
-              href={href}
+              href={"https://mansurenterprise-oxr3.vercel.app/"}
               className='group block overflow-hidden rounded-[2rem] border border-[#161f4a]/10 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl'
             >
               <div className='relative overflow-hidden'>

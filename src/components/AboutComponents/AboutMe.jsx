@@ -9,7 +9,7 @@ function AboutMe() {
   return (
     <section 
       ref={ref} 
-      className="max-w-6xl mx-0 grid grid-cols-1 md:grid-cols-2 items-stretch gap-0 rounded-2xl overflow-hidden shadow-2xl bg-[#161f4a]" 
+      className="max-w-6xl mx-0 grid grid-cols-1  md:grid-cols-2 items-stretch gap-0 rounded-2xl overflow-hidden shadow-2xl bg-[#161f4a]" 
       aria-labelledby="aboutme-heading"
     >
       {/* Image column */}
