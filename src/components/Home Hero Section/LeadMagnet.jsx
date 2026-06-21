@@ -6,7 +6,7 @@ const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xaqzrkpp'
 
 function LeadMagnet() {
   const [ref, visible] = useInViewAnimate({ threshold: 0.25 })
-  const [formData, setFormData] = useState({ fullname: '', email: '' })
+  const [formData, setFormData] = useState({ fullname: '', email: '' , message: '' })
   const [status, setStatus] = useState('idle') // idle | sending | success | error
 
   const handleChange = (e) => {
@@ -85,6 +85,15 @@ function LeadMagnet() {
               className='w-full px-4 py-2 my-6 rounded-full border-[0.2rem] border-[#161f4a] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
             />
 
+
+            <textarea
+              id='message'
+              name='message'
+              placeholder='Enter your message'
+              value={formData.message}
+              onChange={handleChange}
+              className='w-full px-4 py-2 my-6 rounded-full border-[0.2rem] border-[#161f4a] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+            />
             <button
               type='submit'
               disabled={status === 'sending'}
