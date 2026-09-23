@@ -1,33 +1,68 @@
-import React from 'react'
-import useInViewAnimate from '../../hooks/useInViewAnimate'
+import React from 'react';
+import { BiEnvelope, BiRightArrowAlt } from 'react-icons/bi';
+import useInViewAnimate from '../../hooks/useInViewAnimate';
 
 function PortfolioContact() {
-  const [ref, visible] = useInViewAnimate({ threshold: 0.2 })
+  const [ref, visible] = useInViewAnimate({ threshold: 0.2 });
 
   return (
-    <section ref={ref} className='bg-[#161f4a] text-white py-20 px-4 sm:px-6 lg:px-8'>
-      <div className={`max-w-6xl mx-auto rounded-[2rem] border border-white/10 bg-white/5 p-10 sm:p-12 shadow-2xl ${visible ? 'animate-fade-up' : 'opacity-0'}`}>
-        <div className='grid gap-8 lg:grid-cols-[1.2fr_0.8fr] items-center'>
-          <div>
-            <p className='text-sm uppercase tracking-[0.3em] text-blue-300 font-semibold'>Work together</p>
-            <h2 className='mt-4 text-3xl sm:text-4xl font-extrabold'>Ready to turn your next idea into a polished digital experience?</h2>
-            <p className='mt-4 max-w-2xl text-[#dbe2ff]/85 leading-relaxed'>Whether you need a website refresh, marketing campaign, or UX design system, I help brands connect with customers through better digital design.</p>
-          </div>
+    <section 
+      ref={ref} 
+      className="bg-[#0a0f1d] text-white py-20 px-4 sm:px-6 lg:px-12 relative overflow-hidden border-t border-slate-800/80"
+      aria-label="Portfolio Call to Action"
+    >
+      {/* Background Ambient Glow */}
+      <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-[500px] h-[300px] bg-blue-600/10 rounded-full blur-[140px] pointer-events-none" />
 
-          <div className='rounded-3xl bg-[#0f1a3c]/90 p-8 border border-white/10'>
-            <p className='text-sm uppercase tracking-[0.3em] text-blue-200 font-semibold'>Contact me</p>
-            <p className='mt-4 text-base text-[#dbe2ff]/80'>Send a message and I’ll reply with a free project proposal or next steps.</p>
-            <a
-              href='mailto:eboadzietiroug@gmail.com'
-              className='mt-8 inline-flex w-full items-center justify-center rounded-full bg-blue-500 px-6 py-3 text-sm font-bold uppercase tracking-[0.2em] text-white transition hover:bg-blue-400 motion-safe:hover:scale-[1.02]'
-            >
-              Email me
-            </a>
+      <div className={`max-w-6xl mx-auto relative z-10 transition-all duration-1000 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+        <div className="rounded-3xl border border-slate-800/80 bg-slate-900/40 p-8 sm:p-12 shadow-2xl backdrop-blur-md relative overflow-hidden">
+          
+          {/* Subtle Accent Glow inside the container */}
+          <div className="absolute top-0 right-0 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+
+          <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] items-center relative z-10">
+            
+            {/* Left Column: Heading & Description */}
+            <div className="space-y-4">
+              <span className="inline-block text-xs sm:text-sm font-semibold uppercase tracking-[0.2em] text-blue-400 bg-blue-500/10 border border-blue-500/20 px-4 py-1.5 rounded-full">
+                Work Together
+              </span>
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">
+                Ready to turn your next idea into a polished digital experience?
+              </h2>
+              <p className="text-slate-300 leading-relaxed text-base sm:text-lg font-normal max-w-2xl">
+                Whether you need a website refresh, marketing campaign, or UX design system, I help brands connect with customers through better digital design.
+              </p>
+            </div>
+
+            {/* Right Column: CTA Box */}
+            <div className="rounded-2xl bg-slate-950/60 border border-slate-800/90 p-6 sm:p-8 backdrop-blur-md flex flex-col justify-between space-y-6">
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-blue-400">
+                  <BiEnvelope className="text-xl" />
+                  <span className="text-xs font-semibold uppercase tracking-[0.2em]">
+                    Get In Touch
+                  </span>
+                </div>
+                <p className="text-slate-300 text-sm leading-relaxed">
+                  Send a message and I'll reply with a project proposal or next steps.
+                </p>
+              </div>
+
+              <a
+                href="mailto:eboadzietiroug@gmail.com"
+                className="group inline-flex items-center justify-center gap-2 w-full rounded-xl bg-blue-600 hover:bg-blue-500 px-6 py-3.5 text-sm font-semibold text-white transition-all duration-200 shadow-lg shadow-blue-600/20"
+              >
+                <span>Email Me</span>
+                <BiRightArrowAlt className="text-xl transition-transform duration-200 group-hover:translate-x-1" />
+              </a>
+            </div>
+
           </div>
         </div>
       </div>
     </section>
-  )
+  );
 }
 
-export default PortfolioContact
+export default PortfolioContact;
