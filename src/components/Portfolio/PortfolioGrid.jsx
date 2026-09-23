@@ -95,9 +95,9 @@ function PortfolioGrid() {
                   {/* <p className='text-sm uppercase tracking-[0.25em] text-[#161f4a]/60 mb-3'>{label}</p>
                   <h3 className='text-2xl font-bold text-[#161f4a] mb-3'>{title}</h3>
                   <p className='text-[#161f4a]/75 leading-relaxed'>{description}</p> */}
-                  <div className='mt-6 text-blue-500 font-bold transition-colors duration-300 group-hover:text-blue-700'>
+                  {/* <div className='mt-6 text-blue-500 font-bold transition-colors duration-300 group-hover:text-blue-700'>
                     {href.includes('drive.google.com') ? 'View full Drive folder →' : 'View live site →'}
-                  </div>
+                  </div> */}
                 </div>
               </a>
             ))}

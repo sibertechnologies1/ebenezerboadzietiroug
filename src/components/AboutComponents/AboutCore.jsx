@@ -1,85 +1,108 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
-import useInViewAnimate from '../../hooks/useInViewAnimate'
+import React, { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { BiRightArrowAlt } from 'react-icons/bi';
+import useInViewAnimate from '../../hooks/useInViewAnimate';
 
 const skills = [
-  { name: 'UI/UX Designer', percent: 92 },
+  { name: 'UI/UX Design & Architecture', percent: 92 },
   { name: 'Web Development (Front-end)', percent: 88 },
-  { name: 'Digital Marketing', percent: 85 },
-]
+  { name: 'Digital Marketing & Strategy', percent: 85 },
+];
 
 function AboutCore() {
-  const [animate, setAnimate] = useState(false)
-  const skillsRef = useRef(null)
-  const [ref, visible] = useInViewAnimate({ threshold: 0.2 })
+  const [animate, setAnimate] = useState(false);
+  const skillsRef = useRef(null);
+  const [ref, visible] = useInViewAnimate({ threshold: 0.2 });
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setAnimate(true)
-          observer.disconnect()
+          setAnimate(true);
+          observer.disconnect();
         }
       },
       { threshold: 0.3 }
-    )
+    );
 
-    if (skillsRef.current) observer.observe(skillsRef.current)
-    return () => observer.disconnect()
-  }, [])
+    if (skillsRef.current) observer.observe(skillsRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <section ref={ref} aria-labelledby='aboutcore-heading' className='grid lg:grid-cols-2 grid-cols-1 justify-center items-center bg-white py-8 px-4 md:px-12 gap-6'>
-      <div className={`flex flex-col flex-1 ${visible ? 'animate-fade-left' : 'opacity-0'}`}>
-        <p className='text-sm uppercase tracking-[0.25em] text-blue-500 font-semibold mb-2'>MY CORE EXPERTISE</p>
-        <h1 id='aboutcore-heading' className='text-[#161f4a] font-extrabold text-3xl sm:text-4xl md:text-5xl leading-tight'>Let's work
-          <br /> together</h1>
+    <section 
+      ref={ref} 
+      aria-labelledby="aboutcore-heading" 
+      className="bg-[#0a0f1d] text-white py-20 px-4 sm:px-6 lg:px-12 relative overflow-hidden border-t border-slate-800/80"
+    >
+      {/* Background Glow Effect */}
+      <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-96 h-96 bg-blue-600/10 rounded-full blur-[140px] pointer-events-none" />
 
-        <p className='text-[#161f4a] text-base sm:text-lg my-4 max-w-2xl'>
-          I am a passionate digital creator dedicated to turning your vision into impact. Whether it's designing a frictionless user experience, scaling your brand's digital reach, or building a high-performance web presence, my multidisciplinary approach bridges creativity and measurable business growth.
-        </p>
+      <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
+        
+        {/* Left Column: Heading & Intro */}
+        <div className={`lg:col-span-6 flex flex-col justify-center space-y-6 transition-all duration-1000 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+          <div>
+            <span className="inline-block text-xs sm:text-sm font-semibold uppercase tracking-[0.2em] text-blue-400 bg-blue-500/10 border border-blue-500/20 px-4 py-1.5 rounded-full mb-3">
+              My Core Expertise
+            </span>
+            <h2 id="aboutcore-heading" className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-tight">
+              Let's work together
+            </h2>
+          </div>
 
-        <Link
-          to='/contact'
-          aria-label='Contact Ebenezer to start a project'
-          className='inline-block text-[#161f4a] bg-white hover:text-white border-4 border-[#161f4a] hover:bg-[#0d1b3a] hover:border-white py-2 px-6 rounded-full transition-colors duration-300 w-full sm:w-64 text-center font-bold text-lg'
+          <p className="text-slate-300 leading-relaxed text-base sm:text-lg font-normal">
+            I am a passionate digital creator dedicated to turning your vision into impact. Whether it's designing a frictionless user experience, scaling your brand's digital reach, or building a high-performance web presence, my multidisciplinary approach bridges creativity and measurable business growth.
+          </p>
+
+          <div className="pt-2">
+            <Link
+              to="/contact"
+              aria-label="Contact Ebenezer to start a project"
+              className="group inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm py-3.5 px-8 rounded-xl transition-all duration-200 shadow-lg shadow-blue-600/20"
+            >
+              <span>Hire Me</span>
+              <BiRightArrowAlt className="text-xl transition-transform duration-200 group-hover:translate-x-1" />
+            </Link>
+          </div>
+        </div>
+
+        {/* Right Column: Skill Progress Bars */}
+        <div 
+          ref={skillsRef} 
+          className={`lg:col-span-6 flex flex-col justify-center gap-6 bg-slate-900/40 border border-slate-800/80 p-6 sm:p-8 rounded-2xl backdrop-blur-sm shadow-2xl transition-all duration-1000 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
         >
-          Hire Me
-        </Link>
-      </div>
+          {skills.map((skill) => (
+            <div key={skill.name} className="space-y-3">
+              <div className="flex justify-between items-center text-sm font-semibold">
+                <span className="text-white tracking-wide">{skill.name}</span>
+                <span className="text-blue-400 font-mono text-xs bg-blue-500/10 border border-blue-500/20 px-2.5 py-0.5 rounded-md">
+                  {skill.percent}%
+                </span>
+              </div>
 
-      <div ref={skillsRef} className={`flex flex-col justify-center gap-8 w-full ${animate ? 'animate-fade-up' : 'opacity-0'}`} aria-hidden={false}>
-        {skills.map((skill) => (
-          <div key={skill.name}>
-            <h3 className='text-[#161f4a] font-bold text-lg mb-2'>{skill.name}</h3>
-            <div className='relative pt-8'>
-              <span
-                className='absolute -top-1 -translate-x-1/2 border-2 border-[#161f4a] rounded-lg px-3 py-1 text-sm font-bold text-[#161f4a] bg-white whitespace-nowrap transition-all duration-1000 motion-reduce:transition-none'
-                style={{ left: animate ? `${Math.min(skill.percent, 95)}%` : '0%' }}
-                aria-hidden='true'
-              >
-                {skill.percent}%
-              </span>
-
+              {/* Progress Bar Track */}
               <div
-                role='progressbar'
+                role="progressbar"
                 aria-valuemin={0}
                 aria-valuemax={100}
                 aria-valuenow={animate ? skill.percent : 0}
                 aria-label={`${skill.name} proficiency`}
-                className='w-full h-3 bg-white border-2 border-[#161f4a] rounded-full overflow-hidden'
+                className="w-full h-3 bg-slate-800/80 rounded-full overflow-hidden p-0.5 border border-slate-700/50"
               >
+                {/* Progress Bar Fill */}
                 <div
-                  className='h-full bg-[#161f4a] rounded-full transition-all duration-1000 motion-reduce:transition-none'
+                  className="h-full bg-gradient-to-r from-blue-600 to-blue-400 rounded-full transition-all duration-1000 ease-out motion-reduce:transition-none"
                   style={{ width: animate ? `${skill.percent}%` : '0%' }}
                 />
               </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
+
       </div>
     </section>
-  )
+  );
 }
 
-export default AboutCore
+export default AboutCore;

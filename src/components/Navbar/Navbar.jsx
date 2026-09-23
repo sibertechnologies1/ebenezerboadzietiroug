@@ -1,93 +1,139 @@
-import React, { useState } from 'react'
-import { NavLink } from 'react-router-dom'
-import logo from "../Navbar/logo.png"
+import React, { useState, useEffect } from 'react';
+import { NavLink, useLocation } from 'react-router-dom';
+import logo from "../Navbar/logo.png";
+import { BiMenu, BiX, BiSend } from "react-icons/bi";
 
 function Navbar() {
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const location = useLocation();
 
   const links = [
     { name: 'Home', path: '/' },
     { name: 'About', path: '/about' },
     { name: 'Portfolio', path: '/portfolio' },
     { name: 'Contact', path: '/contact' },
-  ]
+  ];
 
-  const closeMenu = () => setIsOpen(false)
+  // Detect page scroll to adjust background shadow
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Close mobile drawer when route changes
+  useEffect(() => {
+    setIsOpen(false);
+  }, [location]);
 
   return (
-    <div className='bg-[#161f4a] sm:bg-white px-4 sm:px-6 lg:px-8 sticky top-0 z-50 shadow-md animate-zoom-in'>
-      <div className='flex justify-between items-center py-4'>
-        <img src={logo} alt="Logo" className='w-20 h-20 object-contain bg-white sm:bg-transparent rounded-full' />
+    <header 
+      className={`sticky top-0 z-50 transition-all duration-300 backdrop-blur-md border-b ${
+        scrolled 
+          ? 'bg-[#ffffff] border-slate-800/80 shadow-lg shadow-black/20' 
+          : 'bg-[#ffffff] border-transparent'
+      }`}
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-20">
+          
+          {/* Logo & Brand */}
+          <NavLink to="/" className="flex items-center gap-3 group">
+            <div className="w-10 h-10 rounded-xl overflow-hidden bg-slate-800 p-1 border border-slate-700/60 transition-transform duration-300 group-hover:scale-105">
+              <img 
+                src={logo} 
+                alt="Brand Logo" 
+                className="w-full h-full object-contain" 
+              />
+            </div>
+            <span className="text-lg font-bold text-blue-200 tracking-tight group-hover:text-blue-400 transition-colors">
+              Ebenezer
+            </span>
+          </NavLink>
 
-        {/* Desktop nav */}
-        <nav className='hidden lg:block'>
-          <ul className='flex flex-row gap-8 items-center'>
+          {/* Desktop Navigation Links */}
+          <nav className="hidden lg:flex items-center gap-1 bg-slate-900/60 border-2 border-blue-800/80 px-4 py-1.5 rounded-full backdrop-blur-sm">
             {links.map((link) => (
-              <li key={link.path}>
-                <NavLink
-                  to={link.path}
-                  end={link.path === '/'}
-                  className={({ isActive }) =>
-                    `font-bold px-3 py-1.5 rounded transition-all ${
-                      isActive
-                        ? 'bg-[#161f4a] text-white'
-                        : 'text-[#161f4a] hover:bg-[#161f4a] hover:text-white'
-                    }`
-                  }
-                >
-                  {link.name}
-                </NavLink>
-              </li>
-            ))}
-          </ul>
-        </nav>
-
-        {/* Mobile menu button */}
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className='lg:hidden text-white sm:text-[#161f4a] p-2'
-          aria-label={isOpen ? 'Close menu' : 'Open menu'}
-          aria-expanded={isOpen}
-          aria-controls='mobile-nav'
-        >
-          <svg className='w-6 h-6' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
-            {isOpen ? (
-              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M6 18L18 6M6 6l12 12' />
-            ) : (
-              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M4 6h16M4 12h16M4 18h16' />
-            )}
-          </svg>
-        </button>
-      </div>
-
-      {/* Mobile nav */}
-      <nav
-        id='mobile-nav'
-        className={`lg:hidden overflow-hidden transition-all duration-300 ${isOpen ? 'max-h-60 pb-4' : 'max-h-0'}`}
-      >
-        <ul className='flex flex-col gap-2'>
-          {links.map((link) => (
-            <li key={link.path}>
               <NavLink
+                key={link.path}
                 to={link.path}
                 end={link.path === '/'}
-                onClick={closeMenu}
                 className={({ isActive }) =>
-                  `block font-bold px-3 py-2 rounded transition-all ${
+                  `text-sm font-medium px-4 py-2 rounded-full transition-all duration-200 ${
                     isActive
-                      ? 'bg-white text-[#161f4a] sm:bg-[#161f4a] sm:text-white'
-                      : 'text-white sm:text-[#161f4a] hover:bg-white hover:text-[#161f4a] sm:hover:bg-[#161f4a] sm:hover:text-white'
+                      ? 'bg-blue-600 text-white shadow-md shadow-blue-600/25 font-semibold'
+                      : 'md:text-slate-100 text-black  hover:text-blue-600 font-extrabold hover:bg-slate-800/60'
                   }`
                 }
               >
                 {link.name}
               </NavLink>
-            </li>
+            ))}
+          </nav>
+
+          {/* Desktop CTA Action Button */}
+          <div className="hidden lg:flex items-center">
+            <NavLink
+              to="/contact"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-sm font-semibold py-2.5 px-5 rounded-full shadow-md shadow-blue-600/20 transition-all duration-200 hover:scale-102"
+            >
+              <span>Get in Touch</span>
+              <BiSend className="text-base" />
+            </NavLink>
+          </div>
+
+          {/* Mobile Menu Control Button */}
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="lg:hidden p-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800/60 border border-slate-800 transition-colors"
+            aria-label={isOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={isOpen}
+          >
+            {isOpen ? <BiX className="text-2xl" /> : <BiMenu className="text-2xl" />}
+          </button>
+
+        </div>
+      </div>
+
+      {/* Mobile Glassmorphism Dropdown */}
+      <div
+        className={`lg:hidden transition-all duration-300 overflow-hidden bg-[#0a0f1d]/95 border-b border-slate-800 backdrop-blur-xl ${
+          isOpen ? 'max-h-80 opacity-100 py-4' : 'max-h-0 opacity-0 py-0'
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col gap-2">
+          {links.map((link) => (
+            <NavLink
+              key={link.path}
+              to={link.path}
+              end={link.path === '/'}
+              onClick={() => setIsOpen(false)}
+              className={({ isActive }) =>
+                `block text-base font-medium px-4 py-3 rounded-xl transition-all duration-200 ${
+                  isActive
+                    ? 'bg-blue-600/20 border-4 border-blue-500/30 text-blue-400 font-semibold'
+                    : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
+                }`
+              }
+            >
+              {link.name}
+            </NavLink>
           ))}
-        </ul>
-      </nav>
-    </div>
-  )
+
+          <NavLink
+            to="/contact"
+            onClick={() => setIsOpen(false)}
+            className="mt-2 text-center bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3 px-4 rounded-xl transition-colors text-sm shadow-md shadow-blue-600/20"
+          >
+            Get in Touch
+          </NavLink>
+        </div>
+      </div>
+    </header>
+  );
 }
 
-export default Navbar
+export default Navbar;
