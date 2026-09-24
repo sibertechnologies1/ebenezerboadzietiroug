@@ -11,7 +11,10 @@ import {
   BiBell,
   BiEditAlt
 } from 'react-icons/bi';
+
+import { CgWebsite } from "react-icons/cg";
 import { supabase } from '../../supabaseClient';
+
 
 function DashboardLayout({ children, activeTab, setActiveTab }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -98,10 +101,17 @@ function DashboardLayout({ children, activeTab, setActiveTab }) {
           </nav>
         </div>
 
-        <div className="p-4 border-t border-teal-800">
+        <div className="p-4 border-t border-teal-800 flex flex-col">
+          <a href="/" className='w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-teal-200  hover:bg-teal-800/60 rounded-xl transition duration-200'>
+
+
+        
+          <CgWebsite className="text-lg flex-shrink-0 text-sky-300" />
+            <span>Visite Site</span>
+          </a>
           <button 
             onClick={handleLogout} 
-            className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-teal-200 hover:text-red-300 hover:bg-teal-800/60 rounded-xl transition duration-200"
+            className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-teal-200  hover:bg-teal-800/60 rounded-xl transition duration-200"
           >
             <BiLogOut className="text-lg flex-shrink-0 text-sky-300" />
             <span>Sign Out</span>
