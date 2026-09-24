@@ -1,31 +1,61 @@
-import React from 'react'
-import Navbar from '../components/Navbar/Navbar'
-import AboutMe from '../components/AboutComponents/AboutMe'
-import AboutCore from '../components/AboutComponents/AboutCore'
-import StatsSection from '../components/AboutComponents/StatsSection'
-import Footer from '../components/Footer/Footer'
+import React, { useState, useEffect } from 'react';
+import Navbar from '../components/Navbar/Navbar';
+import AboutMe from '../components/AboutComponents/AboutMe';
+import AboutCore from '../components/AboutComponents/AboutCore';
+import StatsSection from '../components/AboutComponents/StatsSection';
+import Footer from '../components/Footer/Footer';
+import { supabase } from '../supabaseClient';
 
 function About() {
-  return (
-    <div>
-      <Navbar />
-<div className=' flex flex-col bg-white justify-center items-center h-auto w-full py-4'>
-    <div className=' flex flex-col  '>
-        <h1 className=' text-[#161f4a] font-extrabold text-[3rem]'>About Us</h1>
-       <div className="flex flex-row gap bg-[#161f4a] text-center align-center justify-center rounded-md px-4 mt-0">
-         <a href="/" className='  text-white py-2 px-4  transition duration-300'>Home</a>
-         <span className=' text-[#ffffff] pt-2'>||</span>
-         <p className='  text-white py-2 px-4  transition duration-300'>About</p>
-       </div>
-    </div>
-</div>
-<AboutMe />
-<AboutCore />
-<StatsSection />
+  const [aboutData, setAboutData] = useState({});
+  const [loading, setLoading] = useState(true);
 
-<Footer />
+  useEffect(() => {
+    const fetchAboutContent = async () => {
+      const { data, error } = await supabase
+        .from('page_sections')
+        .select('*')
+        .eq('page', 'about');
+
+      if (!error && data) {
+        const mappedData = {};
+        data.forEach((item) => {
+          mappedData[item.section_id] = item.content;
+        });
+        setAboutData(mappedData);
+      }
+      setLoading(false);
+    };
+
+    fetchAboutContent();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0a0f1d] flex flex-col items-center justify-center gap-3 text-white font-medium">
+        <div className="w-8 h-8 border-4 border-slate-700 border-t-sky-400 rounded-full animate-spin" />
+        <p className="text-sm text-slate-400">Loading details...</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen flex flex-col bg-slate-950 text-slate-100">
+      <Navbar />
+
+      <main className="flex-grow">
+        {/* Header / Breadcrumb Banner */}
+      
+
+        {/* Dynamic Page Sections */}
+        <AboutMe content={aboutData.about_me} />
+        <AboutCore content={aboutData.about_core} />
+        <StatsSection content={aboutData.stats} />
+      </main>
+
+      <Footer />
     </div>
-  )
+  );
 }
 
-export default About
+export default About;

@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import { BiPaperPlane, BiCheckCircle, BiErrorCircle, BiEnvelope, BiPhone, BiMap } from 'react-icons/bi';
 import useInViewAnimate from '../../hooks/useInViewAnimate';
-import contactImg from './contact.jpg'; // Adjust path if needed
-
-const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xaqzrkpp';
+import contactFallbackImg from './contact.jpg';
 
 function Field({ label, children }) {
   return (
@@ -16,12 +14,28 @@ function Field({ label, children }) {
   );
 }
 
-function ContactForm() {
+function ContactForm({ heroContent, formContent }) {
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
   const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const [ref, visible] = useInViewAnimate({ threshold: 0.15 });
+
+  // Contact details with default fallbacks
+  const detailsTagline = heroContent?.tagline || 'Contact Details';
+  const detailsTitle = heroContent?.title || "Let's build something together";
+  const detailsDesc = heroContent?.description || 'If you have a project, idea, or just want to say hello...';
+  const email = heroContent?.email || 'eboadzietiroug@gmail.com';
+  const phone = heroContent?.phone || '+233 50 215 6703';
+  const location = heroContent?.location || 'Kumasi, Ghana';
+  const directLineTitle = heroContent?.directLineTitle || 'Direct Line';
+  const directLineDesc = heroContent?.directLineDescription || 'Quick response guaranteed for all inquiries.';
+  const image = heroContent?.image || contactFallbackImg;
+
+  // Form setup with fallbacks
+  const formTagline = formContent?.tagline || 'Get In Touch';
+  const formTitle = formContent?.title || 'Send a Message';
+  const formspreeEndpoint = formContent?.formspreeEndpoint || 'https://formspree.io/f/xaqzrkpp';
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -45,7 +59,7 @@ function ContactForm() {
     setStatus(null);
 
     try {
-      const response = await fetch(FORMSPREE_ENDPOINT, {
+      const response = await fetch(formspreeEndpoint, {
         method: 'POST',
         headers: { Accept: 'application/json' },
         body: new FormData(e.target),
@@ -62,7 +76,7 @@ function ContactForm() {
       const body = encodeURIComponent(
         `Name: ${form.name}\nEmail: ${form.email}\n\n${form.message}`
       );
-      window.location.href = `mailto:eboadzietiroug@gmail.com?subject=${subject}&body=${body}`;
+      window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
       setStatus({ type: 'success', message: 'Opening your default email client...' });
     } finally {
       setLoading(false);
@@ -78,28 +92,25 @@ function ContactForm() {
       className="bg-[#0a0f1d] text-white py-12 sm:py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden"
       aria-labelledby="contact-form-title"
     >
-      {/* Background Ambient Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-blue-600/10 rounded-full blur-[140px] pointer-events-none" />
 
       <div className={`max-w-6xl mx-auto relative z-10 transition-all duration-1000 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-        
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
           
-          {/* Left Column: Direct Contact Info & Phone Graphic */}
+          {/* Left Column */}
           <div className="lg:col-span-5 space-y-6">
             <div className="space-y-3">
               <span className="inline-block text-xs font-semibold uppercase tracking-[0.2em] text-blue-400 bg-blue-500/10 border border-blue-500/20 px-3.5 py-1 rounded-full">
-                Contact Details
+                {detailsTagline}
               </span>
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight">
-                Let's build something together
+                {detailsTitle}
               </h2>
               <p className="text-slate-300 text-sm leading-relaxed">
-                If you have a project, idea, or just want to say hello, send a message. I typically respond within 24 hours.
+                {detailsDesc}
               </p>
             </div>
 
-            {/* Contact Info List */}
             <div className="space-y-3 pt-1">
               <div className="flex items-center gap-3 text-slate-300">
                 <div className="p-2 bg-slate-900 border border-slate-800 rounded-xl text-blue-400">
@@ -107,8 +118,8 @@ function ContactForm() {
                 </div>
                 <div>
                   <p className="text-[11px] text-slate-400 font-medium uppercase tracking-wider">Email</p>
-                  <a href="mailto:eboadzietiroug@gmail.com" className="text-xs sm:text-sm text-white hover:text-blue-400 transition-colors">
-                    eboadzietiroug@gmail.com
+                  <a href={`mailto:${email}`} className="text-xs sm:text-sm text-white hover:text-blue-400 transition-colors">
+                    {email}
                   </a>
                 </div>
               </div>
@@ -119,8 +130,8 @@ function ContactForm() {
                 </div>
                 <div>
                   <p className="text-[11px] text-slate-400 font-medium uppercase tracking-wider">Phone</p>
-                  <a href="tel:+233502156703" className="text-xs sm:text-sm text-white hover:text-blue-400 transition-colors">
-                    +233 50 215 6703
+                  <a href={`tel:${phone.replace(/\s+/g, '')}`} className="text-xs sm:text-sm text-white hover:text-blue-400 transition-colors">
+                    {phone}
                   </a>
                 </div>
               </div>
@@ -131,28 +142,25 @@ function ContactForm() {
                 </div>
                 <div>
                   <p className="text-[11px] text-slate-400 font-medium uppercase tracking-wider">Location</p>
-                  <p className="text-xs sm:text-sm text-white">Kumasi, Ghana</p>
+                  <p className="text-xs sm:text-sm text-white">{location}</p>
                 </div>
               </div>
             </div>
 
-            {/* Vintage Phone Card */}
             <div className="rounded-2xl p-5 bg-slate-900/40 border border-slate-800/80 backdrop-blur-md shadow-xl flex flex-col items-center text-center space-y-3">
               <img
-                src={contactImg}
-                alt="Vintage Telephone"
+                src={image}
+                alt="Direct Contact"
                 className="w-full max-w-[160px] h-auto object-contain filter drop-shadow-2xl"
               />
               <div className="space-y-0.5">
-                <h3 className="text-sm font-bold text-white">Direct Line</h3>
-                <p className="text-xs text-slate-400">
-                  Quick response guaranteed for all inquiries.
-                </p>
+                <h3 className="text-sm font-bold text-white">{directLineTitle}</h3>
+                <p className="text-xs text-slate-400">{directLineDesc}</p>
               </div>
             </div>
           </div>
 
-          {/* Right Column: Contact Form */}
+          {/* Right Column */}
           <div className="lg:col-span-7">
             <form 
               onSubmit={handleSubmit} 
@@ -161,10 +169,10 @@ function ContactForm() {
             >
               <div className="space-y-1">
                 <span className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-400">
-                  Get In Touch
+                  {formTagline}
                 </span>
                 <h3 id="contact-form-title" className="text-xl sm:text-2xl font-bold text-white">
-                  Send a Message
+                  {formTitle}
                 </h3>
               </div>
 
@@ -214,7 +222,6 @@ function ContactForm() {
                 </Field>
               </div>
 
-              {/* Submit & Status Bar */}
               <div className="pt-3 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4">
                 <button
                   type="submit"
