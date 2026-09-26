@@ -8,22 +8,33 @@ import { supabase } from '../supabaseClient';
 
 function Portfolio() {
   const [portfolioData, setPortfolioData] = useState({});
+  const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchPortfolioContent = async () => {
-      const { data, error } = await supabase
+      const { data: sectionData, error: sectionError } = await supabase
         .from('page_sections')
         .select('*')
         .eq('page', 'portfolio');
 
-      if (!error && data) {
+      if (!sectionError && sectionData) {
         const mappedData = {};
-        data.forEach((item) => {
+        sectionData.forEach((item) => {
           mappedData[item.section_id] = item.content;
         });
         setPortfolioData(mappedData);
       }
+
+      const { data: projectData, error: projectError } = await supabase
+        .from('projects')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (!projectError && projectData) {
+        setProjects(projectData);
+      }
+
       setLoading(false);
     };
 
@@ -42,7 +53,7 @@ function Portfolio() {
     <div>
       <Navbar />
       <PortfolioHero content={portfolioData.portfolio_hero} />
-      <PortfolioGrid content={portfolioData.portfolio_grid} />
+      <PortfolioGrid content={portfolioData.portfolio_grid} projects={projects} />
       <PortfolioContact content={portfolioData.portfolio_contact} />
       <Footer />
     </div>

@@ -15,15 +15,14 @@ import {
 import { CgWebsite } from "react-icons/cg";
 import { supabase } from '../../supabaseClient';
 
-
-function DashboardLayout({ children, activeTab, setActiveTab }) {
+function DashboardLayout({ children, activeTab, setActiveTab, unreadCount = 0 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
 
   const navItems = [
     { id: 'overview', label: 'Overview', icon: BiGridAlt },
     { id: 'content', label: 'Page Content', icon: BiEditAlt },
-    { id: 'messages', label: 'Messages', icon: BiEnvelope, badge: 3 },
+    { id: 'messages', label: 'Messages', icon: BiEnvelope, badge: unreadCount },
     { id: 'projects', label: 'Projects', icon: BiFolder },
     { id: 'settings', label: 'Settings', icon: BiCog },
   ];
@@ -34,7 +33,8 @@ function DashboardLayout({ children, activeTab, setActiveTab }) {
   };
 
   return (
-    <div className="min-h-screen bg-white text-teal-950 flex antialiased">
+    <div className="h-screen w-full bg-white text-teal-950 flex overflow-hidden antialiased">
+      {/* Mobile Backdrop Overlay */}
       {sidebarOpen && (
         <div 
           onClick={() => setSidebarOpen(false)} 
@@ -42,12 +42,14 @@ function DashboardLayout({ children, activeTab, setActiveTab }) {
         />
       )}
 
+      {/* Sidebar Navigation */}
       <aside className={`
-        fixed lg:static top-0 bottom-0 left-0 z-50 w-64 bg-teal-900 text-white
-        flex flex-col justify-between transition-transform duration-300 ease-in-out shadow-xl lg:shadow-none
+        fixed lg:static top-0 bottom-0 left-0 z-50 w-64 h-full bg-teal-900 text-white
+        flex flex-col justify-between shrink-0 transition-transform duration-300 ease-in-out shadow-xl lg:shadow-none
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
-        <div className="p-5 sm:p-6">
+        {/* Top Section: Header + Scrollable Nav */}
+        <div className="p-5 sm:p-6 flex-1 overflow-y-auto">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-sky-400 flex items-center justify-center font-bold text-teal-950 shadow-md">
@@ -86,7 +88,7 @@ function DashboardLayout({ children, activeTab, setActiveTab }) {
                     <Icon className={`text-lg flex-shrink-0 ${isActive ? 'text-white' : 'text-sky-300'}`} />
                     <span>{item.label}</span>
                   </div>
-                  {item.badge && (
+                  {item.badge > 0 && (
                     <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${
                       isActive 
                         ? 'bg-white/20 text-white' 
@@ -101,17 +103,18 @@ function DashboardLayout({ children, activeTab, setActiveTab }) {
           </nav>
         </div>
 
-        <div className="p-4 border-t border-teal-800 flex flex-col">
-          <a href="/" className='w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-teal-200  hover:bg-teal-800/60 rounded-xl transition duration-200'>
-
-
-        
-          <CgWebsite className="text-lg flex-shrink-0 text-sky-300" />
+        {/* Bottom Section: Always-Visible Actions */}
+        <div className="p-4 border-t border-teal-800 flex flex-col shrink-0 bg-teal-900">
+          <a 
+            href="/" 
+            className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-teal-200 hover:bg-teal-800/60 rounded-xl transition duration-200"
+          >
+            <CgWebsite className="text-lg flex-shrink-0 text-sky-300" />
             <span>Visite Site</span>
           </a>
           <button 
             onClick={handleLogout} 
-            className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-teal-200  hover:bg-teal-800/60 rounded-xl transition duration-200"
+            className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-teal-200 hover:bg-teal-800/60 rounded-xl transition duration-200"
           >
             <BiLogOut className="text-lg flex-shrink-0 text-sky-300" />
             <span>Sign Out</span>
@@ -119,8 +122,10 @@ function DashboardLayout({ children, activeTab, setActiveTab }) {
         </div>
       </aside>
 
-      <div className="flex-1 flex flex-col min-w-0 bg-white">
-        <header className="h-16 border-b-2 border-slate-900 bg-white px-4 sm:px-8 flex items-center justify-between sticky top-0 z-30">
+      {/* Main Workspace */}
+      <div className="flex-1 flex flex-col h-full min-w-0 bg-white overflow-hidden">
+        {/* Fixed Header */}
+        <header className="h-16 border-b-2 border-slate-900 bg-white px-4 sm:px-8 flex items-center justify-between shrink-0 z-30">
           <div className="flex items-center gap-3">
             <button 
               onClick={() => setSidebarOpen(true)} 
@@ -128,13 +133,23 @@ function DashboardLayout({ children, activeTab, setActiveTab }) {
             >
               <BiMenu className="text-xl" />
             </button>
-            <h1 className="text-lg font-bold text-teal-900 capitalize">{activeTab}</h1>
+            <h1 className="text-lg font-bold text-teal-900 capitalize">
+              {activeTab === 'content' ? 'Page Content' : activeTab}
+            </h1>
           </div>
 
           <div className="flex items-center gap-3 sm:gap-4">
-            <button className="p-2.5 text-sky-500 bg-sky-50 border border-slate-900 hover:bg-sky-100 rounded-xl relative transition">
+            <button 
+              onClick={() => setActiveTab('messages')}
+              className="p-2.5 text-sky-500 bg-sky-50 border border-slate-900 hover:bg-sky-100 rounded-xl relative transition"
+              title="View Unread Messages"
+            >
               <BiBell className="text-lg text-sky-500" />
-              <span className="absolute top-2 right-2 w-2 h-2 bg-sky-500 rounded-full"></span>
+              {unreadCount > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 bg-sky-500 text-teal text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-sm">
+                  {unreadCount}
+                </span>
+              )}
             </button>
             <div className="h-6 w-[1px] bg-slate-900"></div>
             <div className="flex items-center gap-3">
@@ -146,6 +161,7 @@ function DashboardLayout({ children, activeTab, setActiveTab }) {
           </div>
         </header>
 
+        {/* Scrollable Page Content */}
         <main className="p-4 sm:p-6 lg:p-8 flex-1 overflow-y-auto">
           {children}
         </main>

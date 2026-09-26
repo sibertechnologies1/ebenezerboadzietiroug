@@ -37,7 +37,7 @@ function Contact() {
   }
 
   return (
-    <div className="bg-[#0a0f1d] min-h-screen text-white flex flex-col justify-between">
+    <div className="bg-[#0a0f1d] min-h-screen  flex flex-col justify-between">
       <Navbar />
       <main className="flex-1">
         <ContactForm 

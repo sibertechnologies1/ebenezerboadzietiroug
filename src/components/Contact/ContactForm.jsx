@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { BiPaperPlane, BiCheckCircle, BiErrorCircle, BiEnvelope, BiPhone, BiMap } from 'react-icons/bi';
 import useInViewAnimate from '../../hooks/useInViewAnimate';
 import contactFallbackImg from './contact.jpg';
+import { supabase } from '../../supabaseClient';
 
 function Field({ label, children }) {
   return (
-    <label className="flex flex-col gap-1.5 w-full">
+    <label className="flex flex-col gap-1.5 w-full text-white" >
       <span className="text-xs font-semibold uppercase tracking-wider text-slate-300">
         {label}
       </span>
@@ -35,7 +36,6 @@ function ContactForm({ heroContent, formContent }) {
   // Form setup with fallbacks
   const formTagline = formContent?.tagline || 'Get In Touch';
   const formTitle = formContent?.title || 'Send a Message';
-  const formspreeEndpoint = formContent?.formspreeEndpoint || 'https://formspree.io/f/xaqzrkpp';
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -59,19 +59,23 @@ function ContactForm({ heroContent, formContent }) {
     setStatus(null);
 
     try {
-      const response = await fetch(formspreeEndpoint, {
-        method: 'POST',
-        headers: { Accept: 'application/json' },
-        body: new FormData(e.target),
-      });
+      const { error: dbError } = await supabase
+        .from('messages')
+        .insert([
+          {
+            name: form.name.trim(),
+            email: form.email.trim(),
+            subject: form.subject.trim() || 'No Subject',
+            message: form.message.trim(),
+            read: false
+          }
+        ]);
 
-      if (response.ok) {
-        setStatus({ type: 'success', message: "Message sent — I'll be in touch soon!" });
-        setForm({ name: '', email: '', subject: '', message: '' });
-      } else {
-        throw new Error('Formspree error');
-      }
-    } catch {
+      if (dbError) throw dbError;
+
+      setStatus({ type: 'success', message: "Message sent — I'll be in touch soon!" });
+      setForm({ name: '', email: '', subject: '', message: '' });
+    } catch (err) {
       const subject = encodeURIComponent(form.subject || 'New message from portfolio');
       const body = encodeURIComponent(
         `Name: ${form.name}\nEmail: ${form.email}\n\n${form.message}`
@@ -84,12 +88,12 @@ function ContactForm({ heroContent, formContent }) {
   };
 
   const inputStyle = 
-    "w-full bg-slate-950/60 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition duration-200";
+    "w-full bg-slate-950/60 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-black placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition duration-200";
 
   return (
     <section 
       ref={ref} 
-      className="bg-[#0a0f1d] text-white py-12 sm:py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden"
+      className="bg-[#0a0f1d]  py-12 sm:py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden"
       aria-labelledby="contact-form-title"
     >
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-blue-600/10 rounded-full blur-[140px] pointer-events-none" />
@@ -100,25 +104,25 @@ function ContactForm({ heroContent, formContent }) {
           {/* Left Column */}
           <div className="lg:col-span-5 space-y-6">
             <div className="space-y-3">
-              <span className="inline-block text-xs font-semibold uppercase tracking-[0.2em] text-blue-400 bg-blue-500/10 border border-blue-500/20 px-3.5 py-1 rounded-full">
+              <span className="inline-block text-xs  font-semibold uppercase tracking-[0.2em] text-blue-400 bg-blue-500/10 border border-blue-500/20 px-3.5 py-1 rounded-full">
                 {detailsTagline}
               </span>
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight">
                 {detailsTitle}
               </h2>
-              <p className="text-slate-300 text-sm leading-relaxed">
+              <p className="text-white text-sm leading-relaxed">
                 {detailsDesc}
               </p>
             </div>
 
             <div className="space-y-3 pt-1">
-              <div className="flex items-center gap-3 text-slate-300">
+              <div className="flex items-center gap-3 text-white">
                 <div className="p-2 bg-slate-900 border border-slate-800 rounded-xl text-blue-400">
                   <BiEnvelope className="text-base" />
                 </div>
                 <div>
-                  <p className="text-[11px] text-slate-400 font-medium uppercase tracking-wider">Email</p>
-                  <a href={`mailto:${email}`} className="text-xs sm:text-sm text-white hover:text-blue-400 transition-colors">
+                  <p className="text-[11px] text-white uppercase tracking-wider font-bold">Email</p>
+                  <a href={`mailto:${email}`} className="text-xs sm:text-sm  text-white hover:text-blue-400 transition-colors">
                     {email}
                   </a>
                 </div>
@@ -129,7 +133,7 @@ function ContactForm({ heroContent, formContent }) {
                   <BiPhone className="text-base" />
                 </div>
                 <div>
-                  <p className="text-[11px] text-slate-400 font-medium uppercase tracking-wider">Phone</p>
+                  <p className="text-[11px] text-white font-bold uppercase tracking-wider">Phone</p>
                   <a href={`tel:${phone.replace(/\s+/g, '')}`} className="text-xs sm:text-sm text-white hover:text-blue-400 transition-colors">
                     {phone}
                   </a>
@@ -141,8 +145,8 @@ function ContactForm({ heroContent, formContent }) {
                   <BiMap className="text-base" />
                 </div>
                 <div>
-                  <p className="text-[11px] text-slate-400 font-medium uppercase tracking-wider">Location</p>
-                  <p className="text-xs sm:text-sm text-white">{location}</p>
+                  <p className="text-[11px] text-white font-bold uppercase tracking-wider ">Location</p>
+                  <p className="text-xs sm:text-sm text-white cursor-pointer hover:text-blue-400 transition-colors">{location}</p>
                 </div>
               </div>
             </div>
@@ -155,7 +159,7 @@ function ContactForm({ heroContent, formContent }) {
               />
               <div className="space-y-0.5">
                 <h3 className="text-sm font-bold text-white">{directLineTitle}</h3>
-                <p className="text-xs text-slate-400">{directLineDesc}</p>
+                <p className="text-xs text-white">{directLineDesc}</p>
               </div>
             </div>
           </div>
@@ -210,7 +214,7 @@ function ContactForm({ heroContent, formContent }) {
                   />
                 </Field>
 
-                <Field label="Message">
+                <Field label="Message" className="text-white">
                   <textarea
                     name="message"
                     value={form.message}
@@ -234,7 +238,7 @@ function ContactForm({ heroContent, formContent }) {
 
                 {status && (
                   <div
-                    className={`flex items-center gap-2 text-xs font-medium px-3.5 py-2 rounded-xl border ${
+                    className={`flex items-center gap-2 text-xs text-white font-medium px-3.5 py-2 rounded-xl border ${
                       status.type === 'error'
                         ? 'text-red-400 bg-red-500/10 border-red-500/20'
                         : 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
