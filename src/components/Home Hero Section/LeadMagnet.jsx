@@ -40,7 +40,7 @@ function LeadMagnet() {
     <section 
       id="contact" 
       ref={ref} 
-      className="scroll-mt-24 bg-[#0a0f1d] text-white py-20 px-4 sm:px-6 lg:px-12 relative overflow-hidden border-t border-slate-800/80"
+      className="scroll-mt-24 bg-[#0a0f1d] py-20 px-4 sm:px-6 lg:px-12 relative overflow-hidden border-t border-slate-800/80"
     >
       {/* Background Glow */}
       <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-96 h-96 bg-blue-600/10 rounded-full blur-[140px] pointer-events-none" />
@@ -49,7 +49,7 @@ function LeadMagnet() {
         <div className={`grid grid-cols-1 lg:grid-cols-12 gap-12 items-center transition-all duration-1000 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           
           {/* Left Column: Image & Feature Callouts */}
-          <div className="lg:col-span-5 space-y-6">
+          <div className="lg:col-span-5 space-y-6 text-white ">
             <div className="relative group rounded-2xl overflow-hidden border border-slate-800 bg-slate-900/60 p-3 shadow-2xl backdrop-blur-sm">
               <img 
                 src={ui} 
@@ -93,7 +93,7 @@ function LeadMagnet() {
                 Get 20% Off Your First Project
               </h2>
 
-              <p className="text-slate-300 text-sm sm:text-base mt-3 leading-relaxed font-normal">
+              <p className="text-slate-300 text-sm sm:text-base mt-3 text-white  leading-relaxed font-normal">
                 Submit your project details below to claim an exclusive 20% discount on web development, SEO, or social media branding.
               </p>
             </div>
@@ -111,7 +111,7 @@ function LeadMagnet() {
             ) : (
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div>
-                  <label htmlFor="fullname" className="block text-xs font-medium uppercase tracking-wider text-slate-300 mb-2">
+                  <label htmlFor="fullname" className="block text-xs text-white  font-medium uppercase tracking-wider text-slate-300 mb-2">
                     Full Name
                   </label>
                   <input
@@ -122,13 +122,13 @@ function LeadMagnet() {
                     autoComplete="name"
                     value={formData.fullname}
                     onChange={handleChange}
-                    placeholder="e.g. John Doe"
-                    className="w-full bg-slate-950/60 border border-slate-700/80 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-200 text-sm"
+                    placeholder="Your full Name"
+                    className="w-full bg-slate-950/60 border border-slate-700/80 rounded-xl px-4 py-3 placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-200 text-sm"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="email" className="block text-xs font-medium uppercase tracking-wider text-slate-300 mb-2">
+                  <label htmlFor="email" className="block text-xs text-white  font-medium uppercase tracking-wider text-slate-300 mb-2">
                     Email Address
                   </label>
                   <input
@@ -140,12 +140,12 @@ function LeadMagnet() {
                     value={formData.email}
                     onChange={handleChange}
                     placeholder="you@company.com"
-                    className="w-full bg-slate-950/60 border border-slate-700/80 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-200 text-sm"
+                    className="w-full bg-slate-950/60 border border-slate-700/80 rounded-xl px-4 py-3  placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-200 text-sm"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="message" className="block text-xs font-medium uppercase tracking-wider text-slate-300 mb-2">
+                  <label htmlFor="message" className="block text-xs text-white  font-medium uppercase tracking-wider text-slate-300 mb-2">
                     Project Details
                   </label>
                   <textarea
@@ -156,7 +156,7 @@ function LeadMagnet() {
                     value={formData.message}
                     onChange={handleChange}
                     placeholder="Tell me briefly about your project goals or requirements..."
-                    className="w-full bg-slate-950/60 border border-slate-700/80 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-200 text-sm resize-none"
+                    className="w-full bg-slate-950/60 border border-slate-700/80 rounded-xl px-4 py-3 placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-200 text-sm resize-none"
                   />
                 </div>
 
