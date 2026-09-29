@@ -14,6 +14,7 @@ import {
 
 import { CgWebsite } from "react-icons/cg";
 import { supabase } from '../../supabaseClient';
+import logo from "../../components/Navbar/logo.png";
 
 function DashboardLayout({ children, activeTab, setActiveTab, unreadCount = 0 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -52,8 +53,12 @@ function DashboardLayout({ children, activeTab, setActiveTab, unreadCount = 0 })
         <div className="p-5 sm:p-6 flex-1 overflow-y-auto">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-sky-400 flex items-center justify-center font-bold text-teal-950 shadow-md">
-                A
+              <div className="w-16 h-16 rounded-full bg-sky-400 flex items-center justify-center shadow-md p-2">
+                 <img
+                    src={logo}
+                    alt="Brand Logo"
+                    className="w-full h-full object-contain"
+                  />
               </div>
               <span className="font-bold text-lg text-white tracking-tight">Admin Console</span>
             </div>

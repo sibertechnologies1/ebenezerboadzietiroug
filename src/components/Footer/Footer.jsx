@@ -35,7 +35,7 @@ function Footer() {
           {/* Brand & Bio Column */}
           <div className="md:col-span-5 flex flex-col items-center md:items-start text-center md:text-left">
             <Link to="/" className="flex items-center gap-3 mb-4 group">
-              <div className="w-12 h-12 rounded-full overflow-hidden bg-slate-800 p-1 border border-slate-700/60 transition-transform duration-300 group-hover:scale-105">
+              <div className="w-12 h-12  overflow-hidden bg-slate-800 p-1  transition-transform duration-300 group-hover:scale-105">
                 <img src={logo} alt="Ebenezer Logo" className="w-full h-full object-contain" />
               </div>
               <span className="text-xl font-bold text-white tracking-tight group-hover:text-blue-400 transition-colors">
