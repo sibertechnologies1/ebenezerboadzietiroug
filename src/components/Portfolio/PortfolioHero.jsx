@@ -50,13 +50,7 @@ function PortfolioHero({ content }) {
               {description}
             </p>
 
-            <div className="pt-2 flex items-center gap-2 text-xs sm:text-sm font-semibold tracking-wider uppercase text-slate-400">
-              <Link to="/" className="hover:text-blue-400 transition-colors duration-200">
-                Home
-              </Link>
-              <BiChevronRight className="text-base text-slate-500" />
-              <span className="text-white">Portfolio</span>
-            </div>
+           
           </div>
 
         </div>
