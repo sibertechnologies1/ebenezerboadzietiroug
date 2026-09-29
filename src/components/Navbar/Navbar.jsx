@@ -49,7 +49,7 @@ function Navbar() {
             to="/"
             className="flex items-center gap-3 group"
           >
-            <div className="w-10 h-10 rounded-xl overflow-hidden bg-white p-1 border border-slate-700/60 transition-transform duration-300 group-hover:scale-105">
+            <div className="w-10 h-10 rounded-full overflow-hidden bg-white p-1 border border-slate-700/60 transition-transform duration-300 group-hover:scale-105">
               <img
                 src={logo}
                 alt="Brand Logo"
