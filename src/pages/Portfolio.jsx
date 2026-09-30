@@ -53,7 +53,8 @@ function Portfolio() {
     <div>
       <Navbar />
       <PortfolioHero content={portfolioData.portfolio_hero} />
-      <PortfolioGrid content={portfolioData.portfolio_grid} projects={projects} />
+      {/* Displays both Web Development and Graphic Design with filter buttons */}
+      <PortfolioGrid content={portfolioData.portfolio_grid} projects={projects} isHomePage={false} />
       <PortfolioContact content={portfolioData.portfolio_contact} />
       <Footer />
     </div>

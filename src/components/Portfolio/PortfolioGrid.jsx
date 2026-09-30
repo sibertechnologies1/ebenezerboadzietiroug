@@ -1,20 +1,72 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BiLinkExternal, BiImage } from 'react-icons/bi';
 import useInViewAnimate from '../../hooks/useInViewAnimate';
 
-function PortfolioGrid({ content, projects = [] }) {
+const FOLDER_ID = '19L6jP7xCl6uF5EsGsPzK9I4Y3e_iJXwC';
+const API_KEY = import.meta.env.VITE_GOOGLE_DRIVE_API_KEY;
+
+function PortfolioGrid({ content, projects = [], isHomePage = false }) {
   const [ref, visible] = useInViewAnimate({ threshold: 0.15 });
   const [activeFilter, setActiveFilter] = useState('All');
+  const [driveFlyers, setDriveFlyers] = useState([]);
+  const [loadingDrive, setLoadingDrive] = useState(true);
+
+  useEffect(() => {
+    const fetchDriveFlyers = async () => {
+      if (!API_KEY) {
+        setLoadingDrive(false);
+        return;
+      }
+
+      try {
+        setLoadingDrive(true);
+        const q = `'${FOLDER_ID}' in parents and mimeType contains 'image/' and trashed = false`;
+        const fields = 'files(id, name, createdTime)';
+        const orderBy = 'createdTime desc';
+        const pageSize = isHomePage ? '&pageSize=4' : '';
+
+        const url = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(
+          q
+        )}&orderBy=${encodeURIComponent(
+          orderBy
+        )}&fields=${encodeURIComponent(
+          fields
+        )}${pageSize}&key=${API_KEY}`;
+
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Failed to fetch flyers');
+
+        const data = await response.json();
+
+        const formattedFlyers = (data.files || []).map((file) => ({
+          id: file.id,
+          title: file.name.replace(/\.[^/.]+$/, ''),
+          category: 'Graphic Design',
+          image_url: `https://drive.google.com/thumbnail?id=${file.id}&sz=w500`,
+          isDriveItem: true
+        }));
+
+        setDriveFlyers(formattedFlyers);
+      } catch (err) {
+        console.error('Google Drive Fetch Error:', err);
+      } finally {
+        setLoadingDrive(false);
+      }
+    };
+
+    fetchDriveFlyers();
+  }, [isHomePage]);
 
   const tagline = content?.tagline || 'Recent Projects';
   const title = content?.title || 'Work That Moves Brands Forward';
-  const description = content?.description || 'Explore a selection of my recent web development projects added from the admin dashboard.';
+  const description = content?.description || 'Explore a selection of my recent web development projects and graphic design works.';
 
-  const categories = ['All', ...new Set(projects.map((p) => p.category || 'General'))];
+  const allCombinedItems = [...projects, ...driveFlyers];
+  const categories = ['All', ...new Set(allCombinedItems.map((p) => p.category || 'General'))];
 
-  const filteredProjects = activeFilter === 'All'
-    ? projects
-    : projects.filter((p) => p.category === activeFilter);
+  const filteredItems = activeFilter === 'All'
+    ? allCombinedItems
+    : allCombinedItems.filter((p) => p.category === activeFilter);
 
   return (
     <section 
@@ -38,6 +90,7 @@ function PortfolioGrid({ content, projects = [] }) {
           </p>
         </div>
 
+        {/* Category Filter Buttons */}
         <div className={`flex flex-wrap justify-center gap-2 transition-all duration-1000 delay-100 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           {categories.map((cat) => (
             <button
@@ -54,16 +107,44 @@ function PortfolioGrid({ content, projects = [] }) {
           ))}
         </div>
 
+        {/* Portfolio Cards Grid */}
         <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 transition-all duration-1000 delay-200 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-          {filteredProjects.length === 0 ? (
+          {filteredItems.length === 0 && !loadingDrive ? (
             <div className="col-span-full text-center py-12 text-slate-400 text-sm">
-              No projects found. Add projects from your admin dashboard.
+              No portfolio items found.
             </div>
           ) : (
-            filteredProjects.map(({ id, image_url, title, description, category, live_url, github_url }) => {
+            filteredItems.map(({ id, image_url, title, description, category, live_url, github_url, isDriveItem }) => {
               const href = live_url || github_url || '#';
               const isExternal = Boolean(href && href !== '#');
 
+              // Full Flyer Cards: Fits full image without cropping top or bottom
+              if (isDriveItem) {
+                return (
+                  <div
+                    key={id}
+                    className="bg-slate-900/40 border border-slate-800/80 rounded-xl overflow-hidden shadow-lg backdrop-blur-sm flex flex-col justify-center items-center p-3 relative"
+                  >
+                    {category && (
+                      <span className="absolute top-5 left-5 z-10 text-[10px] font-semibold uppercase tracking-wider bg-slate-950/90 border border-slate-800 text-blue-400 px-2.5 py-0.5 rounded-md backdrop-blur-md">
+                        {category}
+                      </span>
+                    )}
+                    
+                    <div className="w-full h-auto min-h-[380px] max-h-[550px] flex items-center justify-center bg-slate-950/50 rounded-lg overflow-hidden">
+                      <img
+                        src={image_url}
+                        alt={title}
+                        loading="lazy"
+                        referrerPolicy="no-referrer"
+                        className="w-full h-full object-contain max-h-[520px] rounded-md"
+                      />
+                    </div>
+                  </div>
+                );
+              }
+
+              // Web Development Cards
               return (
                 <a
                   key={id}
@@ -74,15 +155,12 @@ function PortfolioGrid({ content, projects = [] }) {
                 >
                   <div className="relative overflow-hidden bg-slate-950 aspect-[16/10] p-3 sm:p-4 flex items-center justify-center border-b border-slate-800/60">
                     <img
-                      src={image_url || 'https://via.placeholder.com/600x400/1e293b/ffffff?text=Preview+Unavailable'}
+                      src={image_url}
                       alt={title}
                       loading="lazy"
+                      referrerPolicy="no-referrer"
                       className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
-                      onError={(e) => {
-                        e.target.src = 'https://via.placeholder.com/600x400/1e293b/ffffff?text=Preview+Unavailable';
-                      }}
                     />
-                    
                     {category && (
                       <span className="absolute top-3 left-3 text-[10px] font-semibold uppercase tracking-wider bg-slate-950/90 border border-slate-800 text-blue-400 px-2.5 py-0.5 rounded-md backdrop-blur-md">
                         {category}
