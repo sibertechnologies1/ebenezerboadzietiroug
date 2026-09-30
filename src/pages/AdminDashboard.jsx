@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import DashboardLayout from '../components/Admin/DashboardLayout';
+import AdminSettings from './AdminSettings';
 import { 
   BiEnvelope, 
   BiCheckCircle, 
@@ -19,7 +20,12 @@ import emailjs from '@emailjs/browser';
 import { supabase } from '../supabaseClient';
 
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState('overview');
+  // Read initial tab from localStorage to prevent resetting on page refresh
+  const [activeTab, setActiveTab] = useState(() => {
+    return localStorage.getItem('admin_active_tab') || 'overview';
+  });
+  
+  const [avatarUrl, setAvatarUrl] = useState('');
   const [messages, setMessages] = useState([]);
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -50,6 +56,12 @@ export default function AdminDashboard() {
     github_url: '',
     featured: false
   });
+
+  // Handle active tab change and persist to localStorage
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    localStorage.setItem('admin_active_tab', tab);
+  };
 
   // Helper to parse strings back to JSON objects or arrays if valid
   const parseJsonIfPossible = (val) => {
@@ -106,6 +118,17 @@ export default function AdminDashboard() {
       fetchSections(selectedPage);
     }
   }, [activeTab, selectedPage]);
+
+  // Load avatar URL on mount
+  useEffect(() => {
+    const loadUserAvatar = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user?.user_metadata?.avatar_url) {
+        setAvatarUrl(user.user_metadata.avatar_url);
+      }
+    };
+    loadUserAvatar();
+  }, []);
 
   // Update field inside single section object content safely
   const handleContentChange = (sectionId, fieldKey, value) => {
@@ -261,24 +284,24 @@ export default function AdminDashboard() {
     setLoading(false);
   };
 
- useEffect(() => {
-  fetchMessages();
-  fetchProjects();
+  useEffect(() => {
+    fetchMessages();
+    fetchProjects();
 
-  const channel = supabase
-    .channel('dashboard_updates')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, () => {
-      fetchMessages();
-    })
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'projects' }, () => {
-      fetchProjects();
-    })
-    .subscribe();
+    const channel = supabase
+      .channel('dashboard_updates')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, () => {
+        fetchMessages();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'projects' }, () => {
+        fetchProjects();
+      })
+      .subscribe();
 
-  return () => {
-    supabase.removeChannel(channel);
-  };
-}, []);
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   const toggleReadStatus = async (msg) => {
     const updatedStatus = !msg.read;
@@ -364,21 +387,18 @@ export default function AdminDashboard() {
 
   const unreadCount = messages.filter((m) => !m.read).length;
 
-  // Fetch Projects from Supabase
-// 1. Fetch projects on component mount (runs once when dashboard loads)
-const fetchProjects = async () => {
-  const { data, error } = await supabase
-    .from('projects')
-    .select('*')
-    .order('created_at', { ascending: false });
+  const fetchProjects = async () => {
+    const { data, error } = await supabase
+      .from('projects')
+      .select('*')
+      .order('created_at', { ascending: false });
 
-  if (!error && data) {
-    setProjects(data);
-  }
-};
+    if (!error && data) {
+      setProjects(data);
+    }
+  };
 
-const projectsCount = projects.length;
-
+  const projectsCount = projects.length;
 
   const handleSaveProject = async (e) => {
     e.preventDefault();
@@ -421,42 +441,36 @@ const projectsCount = projects.length;
     setLoading(false);
   };
 
+  const handleProjectImageUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
 
+    try {
+      setUploadingKey('project-image');
+      const fileExt = file.name.split('.').pop();
+      const fileName = `projects/${Date.now()}.${fileExt}`;
 
-// Upload project cover image to Supabase Storage
-const handleProjectImageUpload = async (event) => {
-  const file = event.target.files[0];
-  if (!file) return;
+      const { error: uploadError } = await supabase.storage
+        .from('portfolio-assets')
+        .upload(fileName, file);
 
-  try {
-    setUploadingKey('project-image');
-    const fileExt = file.name.split('.').pop();
-    const fileName = `projects/${Date.now()}.${fileExt}`;
+      if (uploadError) throw uploadError;
 
-    const { error: uploadError } = await supabase.storage
-      .from('portfolio-assets')
-      .upload(fileName, file);
+      const { data } = supabase.storage
+        .from('portfolio-assets')
+        .getPublicUrl(fileName);
 
-    if (uploadError) throw uploadError;
+      setProjectForm((prev) => ({
+        ...prev,
+        image_url: data.publicUrl
+      }));
+    } catch (err) {
+      alert('Project image upload failed: ' + err.message);
+    } finally {
+      setUploadingKey(null);
+    }
+  };
 
-    const { data } = supabase.storage
-      .from('portfolio-assets')
-      .getPublicUrl(fileName);
-
-    setProjectForm((prev) => ({
-      ...prev,
-      image_url: data.publicUrl
-    }));
-  } catch (err) {
-    alert('Project image upload failed: ' + err.message);
-  } finally {
-    setUploadingKey(null);
-  }
-};
-
-
-
-  // Reset Form with safe defaults
   const resetProjectForm = () => {
     setEditingProject(null);
     setProjectForm({
@@ -470,7 +484,6 @@ const handleProjectImageUpload = async (event) => {
     });
   };
 
-  // Populate Edit Form avoiding null state injection
   const handleEditProject = (proj) => {
     setEditingProject(proj);
     setProjectForm({
@@ -484,7 +497,6 @@ const handleProjectImageUpload = async (event) => {
     });
   };
 
-  // Delete Project
   const handleDeleteProject = async (id) => {
     if (!window.confirm('Are you sure you want to delete this project?')) return;
 
@@ -495,13 +507,18 @@ const handleProjectImageUpload = async (event) => {
 
     if (!error) {
       fetchProjects();
-        } else {
+    } else {
       alert('Error deleting project: ' + error.message);
     }
   };
 
   return (
-    <DashboardLayout activeTab={activeTab} setActiveTab={setActiveTab} unreadCount={unreadCount}>
+    <DashboardLayout 
+      activeTab={activeTab} 
+      setActiveTab={handleTabChange} 
+      unreadCount={unreadCount}
+      avatarUrl={avatarUrl}
+    >
       <div className="w-full max-w-7xl mx-auto px-3 sm:px-6 pb-10 space-y-4 sm:space-y-6">
         
         {/* OVERVIEW TAB */}
@@ -1070,21 +1087,21 @@ const handleProjectImageUpload = async (event) => {
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div className="space-y-1.5">
-                  <label className="text-xs font-bold uppercase tracking-wider text-teal-900">Project Image</label>
-                  <div className="flex flex-col gap-2">
-                    <div className="flex items-center gap-2">
-                      <label className="cursor-pointer inline-flex items-center justify-center gap-1.5 bg-teal-900 text-white font-semibold px-3 py-2 rounded-xl text-xs hover:bg-teal-800 transition shrink-0">
-                        <BiCloudUpload className="text-base" />
-                        <span>{uploadingKey === 'project-image' ? 'Uploading...' : 'Upload File'}</span>
-                        <input 
-                          type="file" 
-                          accept="image/*" 
-                          className="hidden" 
-                          onChange={handleProjectImageUpload}
-                          disabled={uploadingKey === 'project-image'}
-                        />
-                      </label>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold uppercase tracking-wider text-teal-900">Project Image</label>
+                      <div className="flex flex-col gap-2">
+                        <div className="flex items-center gap-2">
+                          <label className="cursor-pointer inline-flex items-center justify-center gap-1.5 bg-teal-900 text-white font-semibold px-3 py-2 rounded-xl text-xs hover:bg-teal-800 transition shrink-0">
+                            <BiCloudUpload className="text-base" />
+                            <span>{uploadingKey === 'project-image' ? 'Uploading...' : 'Upload File'}</span>
+                            <input 
+                              type="file" 
+                              accept="image/*" 
+                              className="hidden" 
+                              onChange={handleProjectImageUpload}
+                              disabled={uploadingKey === 'project-image'}
+                            />
+                          </label>
 
                           <input
                             type="text"
@@ -1218,12 +1235,7 @@ const handleProjectImageUpload = async (event) => {
 
         {/* SETTINGS TAB */}
         {activeTab === 'settings' && (
-          <div className="bg-white border-2 border-slate-900 rounded-2xl p-6 sm:p-8 text-center space-y-3 shadow-sm">
-            <h3 className="text-base sm:text-lg font-bold text-teal-900 tracking-tight">System Settings</h3>
-            <p className="text-xs text-teal-800 max-w-sm mx-auto">
-              Configure system options and API configurations.
-            </p>
-          </div>
+          <AdminSettings onAvatarUpdate={(newUrl) => setAvatarUrl(newUrl)} />
         )}
         
       </div>

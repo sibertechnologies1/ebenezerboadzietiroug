@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   BiGridAlt, 
@@ -16,9 +16,27 @@ import { CgWebsite } from "react-icons/cg";
 import { supabase } from '../../supabaseClient';
 import logo from "../../components/Navbar/logo.png";
 
-function DashboardLayout({ children, activeTab, setActiveTab, unreadCount = 0 }) {
+function DashboardLayout({ children, activeTab, setActiveTab, unreadCount = 0, avatarUrl: propAvatarUrl }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [userProfile, setUserProfile] = useState({
+    avatarUrl: propAvatarUrl || '',
+    fullName: 'Ebenezer'
+  });
+
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setUserProfile({
+          avatarUrl: user.user_metadata?.avatar_url || propAvatarUrl || '',
+          fullName: user.user_metadata?.full_name?.split(' ')[0] || 'Ebenezer'
+        });
+      }
+    };
+    fetchUserData();
+  }, [propAvatarUrl]);
 
   const navItems = [
     { id: 'overview', label: 'Overview', icon: BiGridAlt },
@@ -32,6 +50,8 @@ function DashboardLayout({ children, activeTab, setActiveTab, unreadCount = 0 })
     await supabase.auth.signOut();
     navigate('/admin/login');
   };
+
+  const activeAvatar = propAvatarUrl || userProfile.avatarUrl;
 
   return (
     <div className="h-screen w-full bg-white text-teal-950 flex overflow-hidden antialiased">
@@ -60,7 +80,7 @@ function DashboardLayout({ children, activeTab, setActiveTab, unreadCount = 0 })
                     className="w-full h-full object-contain"
                   />
               </div>
-              <span className="font-bold text-lg text-white tracking-tight">Admin Console</span>
+              <span className="font-bold md:text-lg text-sm text-white tracking-tight">Admin Console</span>
             </div>
             <button 
               onClick={() => setSidebarOpen(false)} 
@@ -158,10 +178,20 @@ function DashboardLayout({ children, activeTab, setActiveTab, unreadCount = 0 })
             </button>
             <div className="h-6 w-[1px] bg-slate-900"></div>
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-teal-900 text-white font-bold text-xs flex items-center justify-center">
-                EB
-              </div>
-              <span className="text-xs font-semibold text-teal-900 hidden sm:inline-block">Ebenezer</span>
+              {activeAvatar ? (
+                <img 
+                  src={activeAvatar} 
+                  alt="Profile Avatar" 
+                  className="w-8 h-8 rounded-full object-cover border border-slate-900 shadow-sm"
+                />
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-teal-900 text-white font-bold text-xs flex items-center justify-center">
+                  EB
+                </div>
+              )}
+              <span className="text-xs font-semibold text-teal-900 hidden sm:inline-block">
+                {userProfile.fullName}
+              </span>
             </div>
           </div>
         </header>
