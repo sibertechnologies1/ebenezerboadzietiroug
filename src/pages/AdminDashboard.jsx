@@ -57,6 +57,11 @@ export default function AdminDashboard() {
     featured: false
   });
 
+  // Bulk Flyer Upload State
+  const [bulkFiles, setBulkFiles] = useState([]);
+  const [isBulkUploading, setIsBulkUploading] = useState(false);
+  const [bulkProgress, setBulkProgress] = useState({ current: 0, total: 0 });
+
   // Handle active tab change and persist to localStorage
   const handleTabChange = (tab) => {
     setActiveTab(tab);
@@ -471,6 +476,60 @@ export default function AdminDashboard() {
     }
   };
 
+  // Bulk Flyer Upload Handler
+  const handleBulkFlyerUpload = async (e) => {
+    e.preventDefault();
+    if (!bulkFiles.length) return;
+
+    setIsBulkUploading(true);
+    setBulkProgress({ current: 0, total: bulkFiles.length });
+
+    try {
+      const uploadedRecords = [];
+
+      for (let i = 0; i < bulkFiles.length; i++) {
+        const file = bulkFiles[i];
+        const fileExt = file.name.split('.').pop();
+        const fileName = `projects/${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${fileExt}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('portfolio-assets')
+          .upload(fileName, file);
+
+        if (uploadError) throw uploadError;
+
+        const { data } = supabase.storage
+          .from('portfolio-assets')
+          .getPublicUrl(fileName);
+
+        const title = file.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ');
+
+        uploadedRecords.push({
+         
+          category: 'Graphic Design',
+         
+          image_url: data.publicUrl,
+          featured: false
+        });
+
+        setBulkProgress({ current: i + 1, total: bulkFiles.length });
+      }
+
+      const { error: insertError } = await supabase
+        .from('projects')
+        .insert(uploadedRecords);
+
+      if (insertError) throw insertError;
+
+      setBulkFiles([]);
+      fetchProjects();
+    } catch (err) {
+      alert('Bulk upload failed: ' + err.message);
+    } finally {
+      setIsBulkUploading(false);
+    }
+  };
+
   const resetProjectForm = () => {
     setEditingProject(null);
     setProjectForm({
@@ -497,18 +556,29 @@ export default function AdminDashboard() {
     });
   };
 
-  const handleDeleteProject = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this project?')) return;
+  // Delete Project and remove associated file from Supabase storage
+  const handleDeleteProject = async (proj) => {
+    if (!window.confirm(`Are you sure you want to delete "${proj.title}"?`)) return;
 
-    const { error } = await supabase
-      .from('projects')
-      .delete()
-      .eq('id', id);
+    try {
+      if (proj.image_url && proj.image_url.includes('portfolio-assets')) {
+        const urlParts = proj.image_url.split('/portfolio-assets/');
+        if (urlParts.length > 1) {
+          const filePath = urlParts[1];
+          await supabase.storage.from('portfolio-assets').remove([filePath]);
+        }
+      }
 
-    if (!error) {
+      const { error } = await supabase
+        .from('projects')
+        .delete()
+        .eq('id', proj.id);
+
+      if (error) throw error;
+
       fetchProjects();
-    } else {
-      alert('Error deleting project: ' + error.message);
+    } catch (err) {
+      alert('Error deleting project: ' + err.message);
     }
   };
 
@@ -1043,6 +1113,60 @@ export default function AdminDashboard() {
               </button>
             </div>
 
+            {/* Bulk Flyer Upload Section */}
+            <div className="bg-white border-2 border-slate-900 rounded-2xl p-4 sm:p-6 shadow-sm space-y-4">
+              <div className="border-b-2 border-slate-900 pb-2">
+                <h3 className="text-base font-bold text-teal-900">Bulk Upload Graphic Design Flyers</h3>
+                <p className="text-xs text-teal-800">Select multiple image files to upload them all to your portfolio at once.</p>
+              </div>
+
+              <form onSubmit={handleBulkFlyerUpload} className="space-y-4">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                  <label className="cursor-pointer inline-flex items-center justify-center gap-2 bg-teal-900 hover:bg-teal-800 text-white font-semibold px-4 py-3 rounded-xl text-xs transition">
+                    <BiCloudUpload className="text-xl" />
+                    <span>Choose Files</span>
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      multiple 
+                      className="hidden" 
+                      onChange={(e) => setBulkFiles(Array.from(e.target.files))}
+                      disabled={isBulkUploading}
+                    />
+                  </label>
+                  <span className="text-xs font-bold text-teal-900">
+                    {bulkFiles.length ? `${bulkFiles.length} file(s) selected` : 'No files selected'}
+                  </span>
+                </div>
+
+                {bulkFiles.length > 0 && (
+                  <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto p-2 bg-slate-50 border border-slate-300 rounded-xl">
+                    {bulkFiles.map((f, idx) => (
+                      <span key={idx} className="text-[11px] bg-white border border-slate-300 px-2 py-1 rounded-md text-teal-900 font-medium truncate max-w-[200px]">
+                        {f.name}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                <div className="flex items-center justify-between">
+                  {isBulkUploading && (
+                    <span className="text-xs font-bold text-sky-600">
+                      Uploading {bulkProgress.current} of {bulkProgress.total}...
+                    </span>
+                  )}
+                  <button
+                    type="submit"
+                    disabled={isBulkUploading || bulkFiles.length === 0}
+                    className="inline-flex items-center gap-2 bg-sky-500 hover:bg-sky-600 text-teal-950 font-extrabold px-5 py-2.5 rounded-xl text-xs border-2 border-slate-900 shadow-sm transition disabled:opacity-50"
+                  >
+                    <BiSave className="text-base" />
+                    <span>{isBulkUploading ? 'Uploading...' : 'Start Bulk Upload'}</span>
+                  </button>
+                </div>
+              </form>
+            </div>
+
             {editingProject && (
               <div className="bg-white border-2 border-slate-900 rounded-2xl p-4 sm:p-6 shadow-sm space-y-4">
                 <h3 className="text-base font-bold text-teal-900 border-b-2 border-slate-900 pb-2">
@@ -1220,7 +1344,7 @@ export default function AdminDashboard() {
                         Edit Details
                       </button>
                       <button
-                        onClick={() => handleDeleteProject(proj.id)}
+                        onClick={() => handleDeleteProject(proj)}
                         className="text-xs font-bold text-red-500 hover:text-red-700 transition"
                       >
                         Delete
