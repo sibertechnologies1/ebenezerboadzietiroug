@@ -6,7 +6,7 @@ const FOLDER_ID = '19L6jP7xCl6uF5EsGsPzK9I4Y3e_iJXwC';
 const API_KEY = import.meta.env.VITE_GOOGLE_DRIVE_API_KEY;
 
 function PortfolioGrid({ content, projects = [], isHomePage = false }) {
-  const [ref, visible] = useInViewAnimate({ threshold: 0.15 });
+  const [ref, visible] = useInViewAnimate({ threshold: 0.1 });
   const [activeFilter, setActiveFilter] = useState('All');
   const [driveFlyers, setDriveFlyers] = useState([]);
   const [loadingDrive, setLoadingDrive] = useState(true);
@@ -42,7 +42,8 @@ function PortfolioGrid({ content, projects = [], isHomePage = false }) {
           id: file.id,
           title: file.name.replace(/\.[^/.]+$/, ''),
           category: 'Graphic Design',
-          image_url: `https://drive.google.com/thumbnail?id=${file.id}&sz=w500`,
+          // Direct web-accessible CDN format for Google Drive files
+          image_url: `https://lh3.googleusercontent.com/d/${file.id}`,
           isDriveItem: true
         }));
 
@@ -78,7 +79,7 @@ function PortfolioGrid({ content, projects = [], isHomePage = false }) {
 
       <div className="max-w-7xl mx-auto relative z-10 space-y-10">
         
-        <div className={`text-center space-y-3 max-w-2xl mx-auto transition-all duration-1000 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+        <div className="text-center space-y-3 max-w-2xl mx-auto">
           <span className="inline-block text-xs font-semibold uppercase tracking-[0.2em] text-blue-400 bg-blue-500/10 border border-blue-500/20 px-3.5 py-1 rounded-full">
             {tagline}
           </span>
@@ -91,7 +92,7 @@ function PortfolioGrid({ content, projects = [], isHomePage = false }) {
         </div>
 
         {/* Category Filter Buttons */}
-        <div className={`flex flex-wrap justify-center gap-2 transition-all duration-1000 delay-100 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+        <div className="flex flex-wrap justify-center gap-2">
           {categories.map((cat) => (
             <button
               key={cat}
@@ -108,7 +109,7 @@ function PortfolioGrid({ content, projects = [], isHomePage = false }) {
         </div>
 
         {/* Portfolio Cards Grid */}
-        <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 transition-all duration-1000 delay-200 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredItems.length === 0 && !loadingDrive ? (
             <div className="col-span-full text-center py-12 text-slate-400 text-sm">
               No portfolio items found.
@@ -118,7 +119,6 @@ function PortfolioGrid({ content, projects = [], isHomePage = false }) {
               const href = live_url || github_url || '#';
               const isExternal = Boolean(href && href !== '#');
 
-              // Full Flyer Cards: Fits full image without cropping top or bottom
               if (isDriveItem) {
                 return (
                   <div
@@ -136,7 +136,7 @@ function PortfolioGrid({ content, projects = [], isHomePage = false }) {
                         src={image_url}
                         alt={title}
                         loading="lazy"
-                        referrerPolicy="no-referrer"
+                        crossOrigin="anonymous"
                         className="w-full h-full object-contain max-h-[520px] rounded-md"
                       />
                     </div>
@@ -144,7 +144,6 @@ function PortfolioGrid({ content, projects = [], isHomePage = false }) {
                 );
               }
 
-              // Web Development Cards
               return (
                 <a
                   key={id}
@@ -158,7 +157,7 @@ function PortfolioGrid({ content, projects = [], isHomePage = false }) {
                       src={image_url}
                       alt={title}
                       loading="lazy"
-                      referrerPolicy="no-referrer"
+                      crossOrigin="anonymous"
                       className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
                     />
                     {category && (
