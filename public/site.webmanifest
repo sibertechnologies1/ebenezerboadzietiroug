@@ -1,0 +1,9 @@
+{
+  "short_name": "Portfolio",
+  "name": "Ebenezer Portfolio",
+  "icons": [],
+  "start_url": "/",
+  "background_color": "#0a0f1d",
+  "theme_color": "#0a0f1d",
+  "display": "standalone"
+}
