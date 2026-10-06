@@ -505,9 +505,8 @@ export default function AdminDashboard() {
         const title = file.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ');
 
         uploadedRecords.push({
-         
+          title: title || 'Graphic Design Flyer',
           category: 'Graphic Design',
-         
           image_url: data.publicUrl,
           featured: false
         });
